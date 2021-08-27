@@ -1,0 +1,41 @@
+name: Doxygen
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  doxygen:
+    runs-on: ubuntu-latest
+
+    env:
+        DOCKER_IMG: doxygen
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: master
+
+    - name: Reset docs with master
+      run: |
+        git config user.name 'GitHub'
+        git config user.email 'noreply@github.com'      
+        git fetch
+        git checkout docs
+        git reset --hard master
+
+    - name: Build docker image 
+      run: |
+        echo Building from dockerfile
+        docker build .devcontainer -t $DOCKER_IMG --no-cache --pull
+
+    - name: Execute tests
+      run: |
+        # Run test
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/hash_table $DOCKER_IMG bash --login -c "cd /workspaces/hash_table && make -C 'tests/doxygen' check -k"
+
+    - name: Commit docs
+      run: |
+        git add -f docs
+        git commit -m "Docs"
+        git push -f

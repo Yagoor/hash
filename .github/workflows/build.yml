@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  hash_table:
+    runs-on: ubuntu-latest
+
+    env:
+        DOCKER_IMG: hash_table
+
+    strategy:
+        fail-fast: false
+        matrix:
+            test: [ tests/unittests, tests/code-style, tests/doxygen ]
+
+    steps:
+
+    - uses: actions/checkout@v2
+      with:
+          fetch-depth: '0'
+          submodules: 'recursive'
+          persist-credentials: false
+
+    - name: Build docker image 
+      run: |
+        echo Building from dockerfile
+        docker build .devcontainer -t $DOCKER_IMG --no-cache --pull
+    - name: Execute tests
+      run: |
+        # Set permissions for Docker mount
+        sudo chown -R 1000:1000 .
+        # Run test
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/hash_table $DOCKER_IMG bash --login -c "cd /workspaces/hash_table && make -C '${{ matrix.test }}' check -k"
