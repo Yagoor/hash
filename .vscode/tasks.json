@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Current",
+            "type": "shell",
+            "command": "make DEBUG=1 -C '${fileDirname}'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },    
+    ]
+}
