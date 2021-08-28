@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    env:
+        DOCKER_IMG: docs
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+          fetch-depth: '0'
+          submodules: 'recursive'
+          persist-credentials: true
+
+    - name: Build docker image 
+      run: |
+        echo Building from dockerfile
+        docker build .devcontainer -t $DOCKER_IMG --no-cache --pull
+
+    - name: Execute tests
+      run: |
+        # Run test
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/anubis-os $DOCKER_IMG bash --login -c "cd /workspaces/anubis-os && make -C 'tests/doxygen' check -k"
+
+    - name: Commit docs
+      run: |
+        git config user.name 'GitHub'
+        git config user.email 'noreply@github.com'      
+        git add -f docs
+        git commit -m "Docs"
+
+    - name: Get base branch
+      id: vars
+      run: |
+        base_ref=${{ github.head_ref || github.ref }}
+        echo ::set-output name=base_branch::${base_ref#refs/*/}
+
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.PAT }}
+        commit-message: Update report
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        branch: update_docs
+        branch-suffix: random
+        delete-branch: true
+        base: ${{ steps.vars.outputs.base_branch }}
+        title: 'Docs report'
+        body: |
+          Docs update
+          - Updated docs after merge to master
+
+        labels: |
+          docs
+          automated pr
+        draft: false

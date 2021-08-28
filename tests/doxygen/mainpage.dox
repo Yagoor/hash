@@ -1,0 +1,7 @@
+/*! \mainpage Hash Table Library
+ *
+ * \section section_introduction Introduction
+ *
+ * This is a generic hash table implementation using open addressing for collision solution
+ *
+ */

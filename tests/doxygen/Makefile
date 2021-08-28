@@ -25,7 +25,7 @@
 BUILDROOT = ../..
 
 # Build directory
-BUILD_DIR = _docs
+BUILD_DIR = docs
 
 # Source directories
 SOURCE_DIRS = $(addprefix $(BUILDROOT)/, $(MODULES))
