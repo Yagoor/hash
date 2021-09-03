@@ -113,6 +113,7 @@ typedef struct {
  * @param[in] hash_function Hash function callback
  * @param[in] size Hash size
  * @param[in] data_size Hash data size
+ * @param[in] key_size Hash key size
  * @return uint8_t 1 if the hash_table was initialized else 0
  */
 uint8_t hash_init(hash_table_t *hash_table, hash_function_t hash_function,

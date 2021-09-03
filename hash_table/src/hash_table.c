@@ -34,28 +34,37 @@
 #include "hash_table.h"
 
 /**
- * @brief Function to increment the data size with the hash_table_table entry size
+ * @brief Function that return the size of a hash entry
  *
- * @param data_size Data size
- * @return uint32_t Data size + hash_table entry size
+ * @param[in] hash_table Hash pointer
+ * @return uint32_t Hash entry size
  */
 static inline uint32_t hash_entry_size(hash_table_t *hash_table)
 __attribute__((always_inline));
 
+/**
+ * @brief Function that return the location of the key in a hash entry
+ *
+ * @param[in] hash_table Hash pointer
+ * @param[in] hash_entry Hash entry pointer
+ * @return uint8_t* Pointer to the hash entry key
+ */
 static inline uint8_t *hash_entry_key(hash_table_t *hash_table,
     hash_entry_t *hash_entry)
 __attribute__((always_inline));
 
+/**
+ * @brief Function that return the location of the data in a hash entry
+ *
+ * @param[in] hash_table Hash pointer
+ * @param[in] hash_entry Hash entry pointer
+ * @return uint8_t* Pointer to the hash entry data
+ */
 static inline uint8_t *hash_entry_data(hash_table_t *hash_table,
     hash_entry_t *hash_entry)
 __attribute__((always_inline));
 
-/**
- * @brief Function to increment the data size with the hash_table_table entry size
- *
- * @param data_size Data size
- * @return uint32_t Data size + hash_table entry size
- */
+
 static inline uint32_t hash_entry_size(hash_table_t *hash_table)
 {
   return (sizeof(hash_entry_t) + hash_table->key_size + hash_table->data_size);
