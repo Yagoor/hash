@@ -21,8 +21,7 @@
 ## SOFTWARE.
 ##
 
-SUBDIRS =
-		basic \
+SUBDIRS = basic \
 		uuid \
 			
 .PHONY: all clean run
