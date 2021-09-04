@@ -80,13 +80,15 @@ void null_test_success(void **state)
     basic_key.key = i;
     basic_data.x = i;
     basic_data.y = BASIC_HASH_ENTRIES_SIZE - i;
-    assert_true(hash_table_insert((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+    assert_true(hash_table_insert((hash_table_t *)&basic_hash,
+        (uint8_t *)&basic_key,
         (uint8_t *)&basic_data));
 
     /* Check hash_table count */
     assert_true(hash_table_count((hash_table_t *)&basic_hash) == i);
 
-    assert_false(hash_table_insert((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+    assert_false(hash_table_insert((hash_table_t *)&basic_hash,
+        (uint8_t *)&basic_key,
         (uint8_t *)&basic_data));
 
     /* Check hash_table count */
@@ -95,24 +97,28 @@ void null_test_success(void **state)
 
   /* Try to insert when hash_table is full */
   basic_key.key = 20;
-  assert_false(hash_table_insert((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  assert_false(hash_table_insert((hash_table_t *)&basic_hash,
+      (uint8_t *)&basic_key,
       (uint8_t *)&basic_data));
 
   /* Remove one item */
   basic_key.key = 9;
-  assert_true(hash_table_remove((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  assert_true(hash_table_remove((hash_table_t *)&basic_hash,
+      (uint8_t *)&basic_key,
       (uint8_t *)&basic_data));
   assert_true(basic_data.x == 9);
   assert_true(basic_data.y == 1);
 
   /* Try to remove it again */
   basic_key.key = 9;
-  assert_false(hash_table_remove((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  assert_false(hash_table_remove((hash_table_t *)&basic_hash,
+      (uint8_t *)&basic_key,
       (uint8_t *)&basic_data));
 
   /* Try to remove item that was not added */
   basic_key.key = 20;
-  assert_false(hash_table_remove((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  assert_false(hash_table_remove((hash_table_t *)&basic_hash,
+      (uint8_t *)&basic_key,
       (uint8_t *)&basic_data));
 
   /* Get item from hash_table and check content */
@@ -124,12 +130,14 @@ void null_test_success(void **state)
 
   /* Remove same item from hash_table */
   basic_key.key = 4;
-  assert_true(hash_table_remove((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  assert_true(hash_table_remove((hash_table_t *)&basic_hash,
+      (uint8_t *)&basic_key,
       NULL));
 
   /* Try to get it again */
   basic_key.key = 4;
-  assert_false(hash_table_get((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  assert_false(hash_table_get((hash_table_t *)&basic_hash,
+      (uint8_t *)&basic_key,
       (uint8_t *)&basic_data));
 }
 

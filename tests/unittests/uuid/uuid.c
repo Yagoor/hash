@@ -94,13 +94,15 @@ void uuid_hash_table_test(void **state)
     uuid_parse(uuids[i - 1], uuid_key.uuid);
     uuid_data.x = i - 1;
 
-    assert_true(hash_table_insert((hash_table_t *)&uuid_hash, (uint8_t *)&uuid_key,
+    assert_true(hash_table_insert((hash_table_t *)&uuid_hash,
+        (uint8_t *)&uuid_key,
         (uint8_t *)&uuid_data));
 
     /* Check hash_table count */
     assert_true(hash_table_count((hash_table_t *)&uuid_hash) == i);
 
-    assert_false(hash_table_insert((hash_table_t *)&uuid_hash, (uint8_t *)&uuid_key,
+    assert_false(hash_table_insert((hash_table_t *)&uuid_hash,
+        (uint8_t *)&uuid_key,
         (uint8_t *)&uuid_data));
 
     /* Check hash_table count */
@@ -111,21 +113,24 @@ void uuid_hash_table_test(void **state)
   uuid_parse(uuids[5], uuid_key.uuid);
   uuid_data.x = 5000;
 
-  assert_true(hash_table_remove((hash_table_t *)&uuid_hash, (uint8_t *)&uuid_key,
+  assert_true(hash_table_remove((hash_table_t *)&uuid_hash,
+      (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 5);
 
   /* Try to remove it again */
   uuid_parse(uuids[5], uuid_key.uuid);
   uuid_data.x = 5000;
-  assert_false(hash_table_remove((hash_table_t *)&uuid_hash, (uint8_t *)&uuid_key,
+  assert_false(hash_table_remove((hash_table_t *)&uuid_hash,
+      (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 5000);
 
   /* Try to remove item that was not added */
   uuid_parse("0e5e756a-0d72-11ec-82a8-0242ac130003", uuid_key.uuid);
   uuid_data.x = 4999;
-  assert_false(hash_table_remove((hash_table_t *)&uuid_hash, (uint8_t *)&uuid_key,
+  assert_false(hash_table_remove((hash_table_t *)&uuid_hash,
+      (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 4999);
 
@@ -137,7 +142,8 @@ void uuid_hash_table_test(void **state)
 
   /* Remove same item from hash_table */
   uuid_parse(uuids[10], uuid_key.uuid);
-  assert_true(hash_table_remove((hash_table_t *)&uuid_hash, (uint8_t *)&uuid_key,
+  assert_true(hash_table_remove((hash_table_t *)&uuid_hash,
+      (uint8_t *)&uuid_key,
       NULL));
 
   /* Try to get it again */
