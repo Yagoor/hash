@@ -27,17 +27,22 @@
 #include <stddef.h>
 #include <setjmp.h>
 #include <cmocka.h>
+#include <stdlib.h>
 
 #include "hash_table.h"
+#include "hash_table_iterator.h"
 
-typedef struct {
+#define PACKED    __attribute__((packed))
+
+typedef struct PACKED {
   uint32_t key;
 } basic_key_t;
 
-typedef struct {
+typedef struct PACKED {
   uint32_t      x;
   uint32_t      y;
-} basic_data_t;
+}
+basic_data_t;
 
 #define BASIC_HASH_ENTRIES_SIZE    10
 
@@ -57,40 +62,15 @@ uint32_t basic_hash_function(uint8_t *key)
 }
 
 
-void null_test_success(void **state)
+void test_basic_hash(void **state)
 {
   (void)state;
 
-  uint8_t i;
   basic_hash_table_t basic_hash;
   basic_key_t basic_key;
   basic_data_t basic_data;
 
-  /* Initialize hash_table */
-  assert_true(hash_table_init((hash_table_t *)&basic_hash,
-      (hash_function_t)basic_hash_function,
-      BASIC_HASH_ENTRIES_SIZE, sizeof(basic_data_t), sizeof(basic_key_t)));
-
-  /* Populate hash_table ensuring that repeated keys is not allowed */
-  for (i = 1; i <= BASIC_HASH_ENTRIES_SIZE; i++)
-  {
-    basic_key.key = i;
-    basic_data.x = i;
-    basic_data.y = BASIC_HASH_ENTRIES_SIZE - i;
-    assert_true(hash_table_insert((hash_table_t *)&basic_hash,
-        (uint8_t *)&basic_key,
-        (uint8_t *)&basic_data));
-
-    /* Check hash_table count */
-    assert_true(hash_table_count((hash_table_t *)&basic_hash) == i);
-
-    assert_false(hash_table_insert((hash_table_t *)&basic_hash,
-        (uint8_t *)&basic_key,
-        (uint8_t *)&basic_data));
-
-    /* Check hash_table count */
-    assert_true(hash_table_count((hash_table_t *)&basic_hash) == i);
-  }
+  basic_hash = (*(basic_hash_table_t *)(*state));
 
   /* Try to insert when hash_table is full */
   basic_key.key = 20;
@@ -139,9 +119,66 @@ void null_test_success(void **state)
 }
 
 
+void test_basic_hash_iterator(void **state)
+{
+  basic_hash_table_t basic_hash;
+  hash_table_iterator_t hash_table_iterator;
+  basic_key_t basic_key;
+  basic_data_t basic_data;
+
+  basic_hash = (*(basic_hash_table_t *)(*state));
+
+  hash_table_iterator_init(&hash_table_iterator, (hash_table_t *)&basic_hash);
+
+  while (hash_table_iterator_next(&hash_table_iterator,
+      (hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+      (uint8_t *)&basic_data))
+  {
+    assert_true(basic_data.x + basic_data.y == 10);
+  }
+}
+
+
 int setup(void **state)
 {
-  (void)state;
+  uint8_t i;
+  basic_key_t basic_key;
+  basic_data_t basic_data;
+  basic_hash_table_t *basic_hash;
+
+  basic_hash = malloc(sizeof(basic_hash_table_t));
+
+  if (basic_hash == NULL) {
+    return (-1);
+  }
+
+  /* Initialize hash_table */
+  assert_true(hash_table_init((hash_table_t *)basic_hash,
+      (hash_function_t)basic_hash_function,
+      BASIC_HASH_ENTRIES_SIZE, sizeof(basic_data_t), sizeof(basic_key_t)));
+
+  /* Populate hash_table ensuring that repeated keys is not allowed */
+  for (i = 1; i <= BASIC_HASH_ENTRIES_SIZE; i++)
+  {
+    basic_key.key = i;
+    basic_data.x = i;
+    basic_data.y = BASIC_HASH_ENTRIES_SIZE - i;
+    assert_true(hash_table_insert((hash_table_t *)basic_hash,
+        (uint8_t *)&basic_key,
+        (uint8_t *)&basic_data));
+
+    /* Check hash_table count */
+    assert_true(hash_table_count((hash_table_t *)basic_hash) == i);
+
+    assert_false(hash_table_insert((hash_table_t *)basic_hash,
+        (uint8_t *)&basic_key,
+        (uint8_t *)&basic_data));
+
+    /* Check hash_table count */
+    assert_true(hash_table_count((hash_table_t *)basic_hash) == i);
+  }
+
+  *state = basic_hash;
 
   return (0);
 }
@@ -149,7 +186,11 @@ int setup(void **state)
 
 int teardown(void **state)
 {
-  (void)state;
+  basic_hash_table_t *basic_hash;
+
+  basic_hash = *state;
+
+  free(basic_hash);
 
   return (0);
 }
@@ -159,7 +200,8 @@ int main(void)
 {
   const struct CMUnitTest tests[] =
   {
-    cmocka_unit_test(null_test_success),
+    cmocka_unit_test(test_basic_hash),
+    cmocka_unit_test(test_basic_hash_iterator),
   };
 
   cmocka_set_message_output(CM_OUTPUT_XML);
