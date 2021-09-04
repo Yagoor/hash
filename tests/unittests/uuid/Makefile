@@ -21,12 +21,16 @@
 ## SOFTWARE.
 ##
 
-SUBDIRS = basic \
-          uuid \
-			
-.PHONY: all clean run
+# Root directory
+BUILDROOT = ../../..
 
-all clean run check:
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -C $$dir -f Makefile $@; \
-	done
+# Test
+TEST = uuid
+
+# Test source C files
+TEST_C = uuid.c uuids.c
+
+LDFLAGS += -luuid
+
+# Include unit test module
+include $(BUILDROOT)/tests/unittests/unittest.mk
