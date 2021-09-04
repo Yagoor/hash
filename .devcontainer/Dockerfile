@@ -1,5 +1,4 @@
-ARG VARIANT="buster"
-FROM mcr.microsoft.com/vscode/devcontainers/base:${VARIANT}
+FROM mcr.microsoft.com/vscode/devcontainers/base:bullseye
 
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
