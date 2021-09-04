@@ -32,7 +32,7 @@
 #ifndef HASH_INLINE_H
 #define HASH_INLINE_H
 
-static inline uint32_t hash_count(hash_table_t *hash_table)
+static inline uint32_t hash_table_count(hash_table_t *hash_table)
 {
   return (hash_table->count);
 }

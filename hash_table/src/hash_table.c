@@ -126,7 +126,7 @@ static hash_entry_t *hash_find(hash_table_t *hash_table, uint8_t *key)
 }
 
 
-uint8_t hash_init(hash_table_t *hash_table, hash_function_t hash_function,
+uint8_t hash_table_init(hash_table_t *hash_table, hash_function_t hash_function,
     uint32_t size, uint32_t data_size, uint32_t key_size)
 {
   hash_table->size = size;
@@ -140,7 +140,7 @@ uint8_t hash_init(hash_table_t *hash_table, hash_function_t hash_function,
 }
 
 
-uint8_t hash_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
+uint8_t hash_table_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 {
   hash_entry_t *hash_entry;
 
@@ -161,7 +161,7 @@ uint8_t hash_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 }
 
 
-uint8_t hash_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
+uint8_t hash_table_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 {
   hash_entry_t *hash_entry;
 
@@ -186,7 +186,7 @@ uint8_t hash_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 }
 
 
-uint8_t hash_get(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
+uint8_t hash_table_get(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 {
   hash_entry_t *hash_entry;
 
