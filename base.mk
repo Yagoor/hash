@@ -56,15 +56,19 @@ vpath %.c $(SOURCE_DIRS)
 all : $(TARGETS)
 
 $(TARGETS): $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
+	@echo "--- CC $(OBJECTS)"
+	@$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
-	$(CC) -c $(C_FLAGS) $(INCLUDES) $< -o $@
+	@echo "--- CC $<"
+	@$(CC) -c $(C_FLAGS) $(INCLUDES) $< -o $@
 
 $(BUILD_DIR):
-	$(MKDIR) $(MKDIR_FLAGS) $@
+	@echo "--- MKDIR $@"
+	@$(MKDIR) $(MKDIR_FLAGS) $@
 
 clean :
-	$(RM) $(RM_FLAGS) $(BUILD_DIR)
+	@echo "--- RM $(BUILD_DIR)"
+	@$(RM) $(RM_FLAGS) $(BUILD_DIR)
 
 -include $(DEPS)

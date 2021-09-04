@@ -45,7 +45,9 @@ valgrind: all
 	@echo "--- Valgrind $(TEST)"
 	-@valgrind --error-exitcode=1 --tool=memcheck --leak-check=full --xml=yes --xml-file=$(BUILD_DIR)/$(TEST)_valgrind.xml $(TARGETS) > /dev/null 2>&1
 
-check: cmocka valgrind
+run: cmocka valgrind
+
+check: run
 	@echo "--- Checking $(TEST)"
 	@if [ "${shell xmllint --xpath 'string(//testsuites/testsuite/@failures)' $(BUILD_DIR)/$(TEST)_cmocka.xml}" != "0" ]; \
 		then cat $(BUILD_DIR)/$(TEST)_cmocka.xml && exit 1; \

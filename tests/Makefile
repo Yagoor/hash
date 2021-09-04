@@ -21,20 +21,13 @@
 ## SOFTWARE.
 ##
 
-# Root directory
-BUILDROOT = ../..
+SUBDIRS = code-style \
+          doxygen \
+          unittests \
+	
+.PHONY: all clean run
 
-# Build directory
-BUILD_DIR = docs
-
-# Source directories
-SOURCE_DIRS = $(addprefix $(BUILDROOT)/, $(MODULES))
-
-all run check:
-	@echo "--- DOXYGEN Doxyfile"
-	@export BUILDROOT='$(BUILDROOT)' \
-	&& doxygen Doxyfile -v > /dev/null
-
-clean:
-	@echo "--- RM $(BUILDROOT)/$(BUILD_DIR)"
-	@rm -rf $(BUILDROOT)/$(BUILD_DIR)
+all clean run check:
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir -f Makefile $@; \
+	done
