@@ -7,7 +7,7 @@ RUN apt-get update \
         valgrind libcmocka-dev \
         uncrustify libxml2-utils \
         doxygen graphviz \
-        uuid-dev \
+        uuid-dev valgrind \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
