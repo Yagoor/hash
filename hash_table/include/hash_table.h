@@ -116,7 +116,7 @@ typedef struct {
  * @param[in] key_size Hash key size
  * @return uint8_t 1 if the hash_table was initialized else 0
  */
-uint8_t hash_init(hash_table_t *hash_table, hash_function_t hash_function,
+uint8_t hash_table_init(hash_table_t *hash_table, hash_function_t hash_function,
     uint32_t size, uint32_t data_size, uint32_t key_size);
 
 /**
@@ -127,7 +127,7 @@ uint8_t hash_init(hash_table_t *hash_table, hash_function_t hash_function,
  * @param[in] data Item data
  * @return uint8_t 1 if the item was inserted else 0
  */
-uint8_t hash_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
+uint8_t hash_table_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
 
 /**
  * @brief Function to remove an item from the hash_table
@@ -137,7 +137,7 @@ uint8_t hash_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
  * @param[out] data Item data
  * @return uint8_t 1 if the item was removed else 0
  */
-uint8_t hash_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
+uint8_t hash_table_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
 
 /**
  * @brief Function to get an item from the hash_table
@@ -147,7 +147,7 @@ uint8_t hash_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
  * @param[out] data Item data
  * @return uint8_t 1 if the item was found else 0
  */
-uint8_t hash_get(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
+uint8_t hash_table_get(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
 
 /**
  * @brief Function to get the number of used entries in the hash_table
@@ -155,7 +155,7 @@ uint8_t hash_get(hash_table_t *hash_table, uint8_t *key, uint8_t *data);
  * @param[in] hash_table Hash pointer
  * @return uint32_t Number of itens in the hash_table
  */
-static inline uint32_t hash_count(hash_table_t *hash_table)
+static inline uint32_t hash_table_count(hash_table_t *hash_table)
 __attribute__((always_inline));
 
 #include "hash_table_inline.h"
