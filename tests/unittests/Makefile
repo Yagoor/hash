@@ -22,7 +22,7 @@
 ##
 
 SUBDIRS = basic \
-		uuid \
+          uuid \
 			
 .PHONY: all clean run
 
