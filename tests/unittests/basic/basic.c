@@ -28,21 +28,19 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "hash_table.h"
 #include "hash_table_iterator.h"
 
-#define PACKED    __attribute__((packed))
-
-typedef struct PACKED {
+typedef struct {
   uint32_t key;
 } basic_key_t;
 
-typedef struct PACKED {
+typedef struct {
   uint32_t      x;
   uint32_t      y;
-}
-basic_data_t;
+} basic_data_t;
 
 #define BASIC_HASH_ENTRIES_SIZE    10
 
@@ -64,8 +62,6 @@ uint32_t basic_hash_function(uint8_t *key)
 
 void test_basic_hash(void **state)
 {
-  (void)state;
-
   basic_hash_table_t basic_hash;
   basic_key_t basic_key;
   basic_data_t basic_data;
@@ -121,20 +117,31 @@ void test_basic_hash(void **state)
 
 void test_basic_hash_iterator(void **state)
 {
+  uint32_t i;
   basic_hash_table_t basic_hash;
   hash_table_iterator_t hash_table_iterator;
   basic_key_t basic_key;
   basic_data_t basic_data;
+  uint8_t key_checker[BASIC_HASH_ENTRIES_SIZE];
 
   basic_hash = (*(basic_hash_table_t *)(*state));
 
+  memset(key_checker, 0, sizeof(key_checker));
   hash_table_iterator_init(&hash_table_iterator, (hash_table_t *)&basic_hash);
 
   while (hash_table_iterator_next(&hash_table_iterator,
       (hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
       (uint8_t *)&basic_data))
   {
+    assert_true(key_checker[basic_key.key - 1] == 0);
     assert_true(basic_data.x + basic_data.y == 10);
+    key_checker[basic_key.key - 1] = 1;
+  }
+
+  /* Verify key checker */
+  for (i = 0; i < BASIC_HASH_ENTRIES_SIZE; i++)
+  {
+    assert_true(key_checker[i] == 1);
   }
 }
 
