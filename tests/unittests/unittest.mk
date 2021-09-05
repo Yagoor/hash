@@ -35,12 +35,13 @@ SOURCE_C += $(TEST_C)
 # Targets
 TARGETS = $(BUILD_DIR)/$(TEST)
 
-OBJECTS += $(BUILD_DIR)/cmocka.c.o
+# Inject cmocka object
+OBJECTS += $(BUILD_DIR)/cmocka.o
 
 include $(BUILDROOT)/base.mk
 
 # Extra rules at the end
-$(BUILD_DIR)/cmocka.c.o: $(BUILDROOT)/external/cmocka/src/cmocka.c | $(BUILD_DIR)
+$(BUILD_DIR)/cmocka.o: $(BUILDROOT)/external/cmocka/src/cmocka.c | $(BUILD_DIR)
 	@echo "--- CC $<"
 	@$(CC) -DCMOCKA_EXPORTS -I$(BUILDROOT)/external/cmocka/src -I$(BUILDROOT)/external/cmocka/include \
 		-fPIC -std=gnu99 -Wpedantic -Wall -Wshadow -Wmissing-prototypes -Wcast-align -Werror=address \
