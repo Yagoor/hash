@@ -1,0 +1,6 @@
+[submodule "external/uuid"]
+	path = external/uuid
+	url = https://github.com/Yagoor/uuid.git
+[submodule "external/cmocka"]
+	path = external/cmocka
+	url = https://gitlab.com/cmocka/cmocka.git
