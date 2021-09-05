@@ -32,6 +32,12 @@
 #ifndef HASH_INLINE_H
 #define HASH_INLINE_H
 
+/**
+ * @brief Function to get the number of used entries in the hash_table
+ *
+ * @param[in] hash_table Hash pointer
+ * @return uint32_t Number of itens in the hash_table
+ */
 static inline uint32_t hash_table_count(hash_table_t *hash_table)
 {
   return (hash_table->count);
