@@ -25,10 +25,10 @@
 BUILDROOT = ../../..
 
 # Test
-TEST = basic
+TEST = test_basic
 
 # Test source C files
-TEST_C = basic.c
+TEST_C = test_basic.c
 
 # Include unit test module
 include $(BUILDROOT)/tests/unittests/unittest.mk

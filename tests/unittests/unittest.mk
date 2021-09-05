@@ -26,7 +26,7 @@ C_FLAGS += -fprofile-arcs -ftest-coverage -fstack-protector-all
 LDFLAGS += -lcmocka -lgcov --coverage
 
 SOURCE_DIRS += $(BUILDROOT)/hash_table/src
-C_FLAGS += -I$(BUILDROOT)/hash_table/include
+INCLUDE_DIRS += $(BUILDROOT)/hash_table/include
 SOURCE_C += hash_table.c hash_table_iterator.c
 
 # C source files

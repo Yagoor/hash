@@ -29,7 +29,7 @@
 #include <cmocka.h>
 #include <stdlib.h>
 #include <string.h>
-#include <uuid/uuid.h>
+#include "uuid.h"
 
 #include "hash_table.h"
 #include "hash_table_iterator.h"
