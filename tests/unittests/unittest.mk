@@ -21,6 +21,7 @@
 ## SOFTWARE.
 ##
 
+C_FLAGS += -Wall -Wextra -Wpedantic 
 C_FLAGS += -fprofile-arcs -ftest-coverage -fstack-protector-all
 LDFLAGS += -lcmocka -lgcov --coverage
 

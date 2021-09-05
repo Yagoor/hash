@@ -33,87 +33,42 @@
 
 #include "hash_table.h"
 
-/**
- * @brief Function that return the size of a hash entry
- *
- * @param[in] hash_table Hash pointer
- * @return uint32_t Hash entry size
- */
-static inline uint32_t hash_entry_size(hash_table_t *hash_table)
-__attribute__((always_inline));
-
-/**
- * @brief Function that return the location of the key in a hash entry
- *
- * @param[in] hash_table Hash pointer
- * @param[in] hash_entry Hash entry pointer
- * @return uint8_t* Pointer to the hash entry key
- */
-static inline uint8_t *hash_entry_key(hash_table_t *hash_table,
-    hash_entry_t *hash_entry)
-__attribute__((always_inline));
-
-/**
- * @brief Function that return the location of the data in a hash entry
- *
- * @param[in] hash_table Hash pointer
- * @param[in] hash_entry Hash entry pointer
- * @return uint8_t* Pointer to the hash entry data
- */
-static inline uint8_t *hash_entry_data(hash_table_t *hash_table,
-    hash_entry_t *hash_entry)
-__attribute__((always_inline));
-
-
-static inline uint32_t hash_entry_size(hash_table_t *hash_table)
-{
-  return (sizeof(hash_entry_t) + hash_table->key_size + hash_table->data_size);
-}
-
-
-static inline uint8_t *hash_entry_key(hash_table_t *hash_table,
-    hash_entry_t *hash_entry)
-{
-  (void)hash_table;
-  return (hash_entry->key);
-}
-
-
-static inline uint8_t *hash_entry_data(hash_table_t *hash_table,
-    hash_entry_t *hash_entry)
-{
-  return (hash_entry->data + hash_table->key_size);
-}
-
 
 /**
  * @brief Function to find an entry in the hash_table
  *
  * @param hash_table Hash pointer
  * @param key Key
- * @return hash_entry_t* A pointer to the hash_table_table entry found or NULL if not found
+ * @return hash_table_entry_t* A pointer to the hash_table_table entry found or NULL if not found
  */
-static hash_entry_t *hash_find(hash_table_t *hash_table, uint8_t *key)
+static hash_table_entry_t *hash_find(hash_table_t *hash_table, uint8_t *key)
 {
   uint32_t i;
   uint32_t index;
   uint32_t position;
-  hash_entry_t *hash_entry;
+  uint8_t *entries;
+  uint8_t *hash_entry_key;
+  hash_table_entry_t *hash_entry;
 
+  entries = (uint8_t *)hash_table + sizeof(hash_table_t);
   /* Convert hash_table key to index */
   index = hash_table->hash_function(key) % hash_table->size;
 
   /* Iterate over the entries looking for an empty one starting from the index */
   for (i = 0; i < hash_table->size; i++)
   {
-    position = index * hash_entry_size(hash_table);
-    hash_entry = (hash_entry_t *)(hash_table->entries + position);
+    position = index *
+        (sizeof(hash_table_entry_t) + hash_table->key_size +
+        hash_table->data_size);
+    hash_entry = (hash_table_entry_t *)(entries + position);
 
     if (!hash_entry->used) {
       return (hash_entry);
     } else {
+      hash_entry_key = (uint8_t *)(hash_entry + sizeof(hash_table_entry_t));
+
       /* If entry is used by the same key, clear it and break. */
-      if (!memcmp(hash_entry->key, key, hash_table->key_size)) {
+      if (!memcmp(hash_entry_key, key, hash_table->key_size)) {
         return (hash_entry);
       }
     }
@@ -129,12 +84,17 @@ static hash_entry_t *hash_find(hash_table_t *hash_table, uint8_t *key)
 uint8_t hash_table_init(hash_table_t *hash_table, hash_function_t hash_function,
     uint32_t size, uint32_t data_size, uint32_t key_size)
 {
+  uint8_t *entries;
+
+  entries = (uint8_t *)hash_table + sizeof(hash_table_t);
+
   hash_table->size = size;
   hash_table->count = 0;
   hash_table->data_size = data_size;
   hash_table->key_size = key_size;
   hash_table->hash_function = hash_function;
-  memset(hash_table->entries, 0, hash_entry_size(hash_table) * size);
+  memset(entries, 0,
+      (sizeof(hash_table_entry_t) + key_size + data_size) * size);
 
   return (1);
 }
@@ -142,18 +102,22 @@ uint8_t hash_table_init(hash_table_t *hash_table, hash_function_t hash_function,
 
 uint8_t hash_table_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 {
-  hash_entry_t *hash_entry;
+  hash_table_entry_t *hash_entry;
+  uint8_t *hash_entry_key;
+  uint8_t *hash_entry_data;
 
   hash_entry = hash_find(hash_table, key);
 
   /* Set data and mark as used if empty entry is available */
   if (hash_entry && !hash_entry->used) {
+    hash_entry_key = (uint8_t *)(hash_entry + sizeof(hash_table_entry_t));
+    hash_entry_data = (uint8_t *)(hash_entry_key + hash_table->key_size);
+
     hash_table->count++;
     hash_entry->used = 1;
     /* Save key and data */
-    memcpy(hash_entry_key(hash_table, hash_entry), key, hash_table->key_size);
-    memcpy(hash_entry_data(hash_table, hash_entry), data,
-        hash_table->data_size);
+    memcpy(hash_entry_key, key, hash_table->key_size);
+    memcpy(hash_entry_data, data, hash_table->data_size);
     return (1);
   } else {
     return (0);
@@ -163,21 +127,25 @@ uint8_t hash_table_insert(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 
 uint8_t hash_table_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 {
-  hash_entry_t *hash_entry;
+  hash_table_entry_t *hash_entry;
+  uint8_t *hash_entry_key;
+  uint8_t *hash_entry_data;
 
   hash_entry = hash_find(hash_table, key);
 
   /* Clear data and mark as not used if entry is found */
   if (hash_entry && hash_entry->used) {
+    hash_entry_key = (uint8_t *)(hash_entry + sizeof(hash_table_entry_t));
+    hash_entry_data = (uint8_t *)(hash_entry_key + hash_table->key_size);
+
     hash_table->count--;
     hash_entry->used = 0;
     if (data) {
       /* Copy data */
-      memcpy(data, hash_entry_data(hash_table,
-          hash_entry), hash_table->data_size);
+      memcpy(data, hash_entry_data, hash_table->data_size);
     }
-    memset(hash_entry_key(hash_table, hash_entry), 0, hash_table->key_size);
-    memset(hash_entry_data(hash_table, hash_entry), 0, hash_table->data_size);
+    memset(hash_entry_key, 0, hash_table->key_size);
+    memset(hash_entry_data, 0, hash_table->data_size);
 
     return (1);
   } else {
@@ -188,15 +156,19 @@ uint8_t hash_table_remove(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 
 uint8_t hash_table_get(hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 {
-  hash_entry_t *hash_entry;
+  hash_table_entry_t *hash_entry;
+  uint8_t *hash_entry_data;
 
   hash_entry = hash_find(hash_table, key);
 
   /* If entry is found and it is used */
   if (hash_entry && hash_entry->used) {
     /* Copy data */
-    memcpy(data, hash_entry_data(hash_table, hash_entry),
-        hash_table->data_size);
+    hash_entry_data =
+        (uint8_t *)(hash_entry + sizeof(hash_table_entry_t) +
+        hash_table->key_size);
+
+    memcpy(data, hash_entry_data, hash_table->data_size);
     return (1);
   } else {
     return (0);

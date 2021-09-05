@@ -43,20 +43,8 @@ typedef struct {
    * @brief Indicates if entry is used
    *
    */
-  uint8_t       used : 1;
-
-  /**
-   * @brief Key
-   *
-   */
-  uint8_t       key[0];
-
-  /**
-   * @brief Data
-   *
-   */
-  uint8_t       data[0];
-} hash_entry_t;
+  uint8_t used : 1;
+} hash_table_entry_t;
 
 /**
  * @brief Function callback
@@ -98,12 +86,6 @@ typedef struct {
    *
    */
   hash_function_t       hash_function;
-
-  /**
-   * @brief Hash entries
-   *
-   */
-  uint8_t               entries[0];
 } hash_table_t;
 
 /**
