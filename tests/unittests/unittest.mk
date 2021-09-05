@@ -35,8 +35,9 @@ SOURCE_C += $(TEST_C)
 # Targets
 TARGETS = $(BUILD_DIR)/$(TEST)
 
-# Inject cmocka object
+# Cmocka
 OBJECTS += $(BUILD_DIR)/cmocka.o
+INCLUDE_DIRS += $(BUILDROOT)/external/cmocka/include
 
 include $(BUILDROOT)/base.mk
 
