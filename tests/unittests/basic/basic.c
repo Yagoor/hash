@@ -129,7 +129,7 @@ void test_basic_hash_iterator(void **state)
   memset(key_checker, 0, sizeof(key_checker));
   hash_table_iterator_init(&hash_table_iterator, (hash_table_t *)&basic_hash);
 
-  while (hash_table_iterator_next(&hash_table_iterator,
+  while (hash_table_iterator_get_next(&hash_table_iterator,
       (hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
       (uint8_t *)&basic_data))
   {

@@ -142,7 +142,7 @@ void test_uuid_hash_iterator(void **state)
   memset(data_checker, 0, sizeof(data_checker));
   hash_table_iterator_init(&hash_table_iterator, (hash_table_t *)&uuid_hash);
 
-  while (hash_table_iterator_next(&hash_table_iterator,
+  while (hash_table_iterator_get_next(&hash_table_iterator,
       (hash_table_t *)&uuid_hash, (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data))
   {

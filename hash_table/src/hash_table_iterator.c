@@ -43,7 +43,7 @@ uint8_t hash_table_iterator_init(hash_table_iterator_t *hash_table_iterator,
 }
 
 
-uint8_t hash_table_iterator_next(hash_table_iterator_t *hash_table_iterator,
+uint8_t hash_table_iterator_get_next(hash_table_iterator_t *hash_table_iterator,
     hash_table_t *hash_table, uint8_t *key, uint8_t *data)
 {
   uint32_t position;
