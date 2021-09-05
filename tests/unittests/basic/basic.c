@@ -39,17 +39,12 @@ typedef struct {
   uint32_t      y;
 } basic_data_t;
 
-typedef struct {
-  hash_entry_t  entry;
-  basic_key_t   key;
-  basic_data_t  data;
-} basic_hash_entry_t;
-
 #define BASIC_HASH_ENTRIES_SIZE    10
 
 typedef struct {
-  hash_table_t          hash_table;
-  basic_hash_entry_t    data[BASIC_HASH_ENTRIES_SIZE];
+  hash_table_t  hash_table;
+  uint8_t       data[(sizeof(hash_table_entry_t) + sizeof(basic_key_t) +
+      sizeof(basic_data_t)) * BASIC_HASH_ENTRIES_SIZE];
 } basic_hash_table_t;
 
 uint32_t basic_hash_function(uint8_t *key)
@@ -64,6 +59,8 @@ uint32_t basic_hash_function(uint8_t *key)
 
 void null_test_success(void **state)
 {
+  (void)state;
+
   uint8_t i;
   basic_hash_table_t basic_hash;
   basic_key_t basic_key;
@@ -144,12 +141,16 @@ void null_test_success(void **state)
 
 int setup(void **state)
 {
+  (void)state;
+
   return (0);
 }
 
 
 int teardown(void **state)
 {
+  (void)state;
+
   return (0);
 }
 

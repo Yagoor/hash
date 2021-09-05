@@ -42,17 +42,12 @@ typedef struct {
   uint32_t x;
 } uuid_data_t;
 
-typedef struct {
-  hash_entry_t  entry;
-  uuid_key_t    key;
-  uuid_data_t   data;
-} uuid_hash_entry_t;
-
 #define UUID_HASH_ENTRIES_SIZE    5000
 
 typedef struct {
-  hash_table_t          hash_table;
-  uuid_hash_entry_t     data[UUID_HASH_ENTRIES_SIZE];
+  hash_table_t  hash_table;
+  uint8_t       data[(sizeof(hash_table_entry_t) + sizeof(uuid_key_t) +
+      sizeof(uuid_data_t)) * UUID_HASH_ENTRIES_SIZE];
 } uuid_hash_table_t;
 
 uint32_t uuid_hash_function(uint8_t *key)
@@ -79,6 +74,8 @@ uint32_t uuid_hash_function(uint8_t *key)
 
 void uuid_hash_table_test(void **state)
 {
+  (void)state;
+
   uint32_t i;
   uuid_key_t uuid_key;
   uuid_data_t uuid_data;
@@ -155,12 +152,16 @@ void uuid_hash_table_test(void **state)
 
 int setup(void **state)
 {
+  (void)state;
+
   return (0);
 }
 
 
 int teardown(void **state)
 {
+  (void)state;
+
   return (0);
 }
 
