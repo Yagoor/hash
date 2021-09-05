@@ -36,14 +36,42 @@
 
 #include "hash_table.h"
 
+/**
+ * @brief Hash table iterator
+ * 
+ */
 typedef struct {
+  /**
+   * @brief Current index in entries
+   * 
+   */
   uint32_t      current;
+  /**
+   * @brief Pointer to the hash table
+   * 
+   */
   hash_table_t *hash_table;
 } hash_table_iterator_t;
 
+/**
+ * @brief Function to initialize a hash table iterator
+ * 
+ * @param[in] hash_table_iterator Hash table iterator pointer
+ * @param[in] hash_table Hash table pointer
+ * @return uint8_t 1 if the hash table iterator was initialized else 0
+ */
 uint8_t hash_table_iterator_init(hash_table_iterator_t *hash_table_iterator,
     hash_table_t *hash_table);
 
+/**
+ * @brief 
+ * 
+ * @param[in] hash_table_iterator Hash table iterator pointer
+ * @param[in] hash_table Hash table pointer
+ * @param[out] key Key pointer
+ * @param[out] data Data pointer
+ * @return uint8_t 1 if the there is a next item else 0
+ */
 uint8_t hash_table_iterator_next(hash_table_iterator_t *hash_table_iterator,
     hash_table_t *hash_table, uint8_t *key, uint8_t *data);
 
