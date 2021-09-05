@@ -25,14 +25,12 @@
 BUILDROOT = ../../..
 
 # Test
-TEST = test_uuid
+TEST = uuid
 
 # Test source C files
-TEST_C = test_uuid.c test_uuids.c
+TEST_C = uuid.c uuids.c
 
-SOURCE_DIRS += $(BUILDROOT)/external/uuid/src
-INCLUDE_DIRS += $(BUILDROOT)/external/uuid/src
-SOURCE_C += parse.c unparse.c pack.c unpack.c compare.c
+LDFLAGS += -luuid
 
 # Include unit test module
 include $(BUILDROOT)/tests/unittests/unittest.mk
