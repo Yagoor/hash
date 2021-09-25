@@ -21,38 +21,14 @@
 ## SOFTWARE.
 ##
 
-C_FLAGS += -Wall -Wextra -Wpedantic 
-C_FLAGS += -fprofile-arcs -ftest-coverage -fstack-protector-all
-LDFLAGS += -lcmocka -lgcov --coverage
+# Root directory
+BUILDROOT = ..
 
-SOURCE_DIRS += $(BUILDROOT)/src
-C_FLAGS += -I$(BUILDROOT)/include
-SOURCE_C += ht.c ht_iter.c
+SOURCE_DIRS += $(BUILDROOT)/hash_table/src
+C_FLAGS += -I$(BUILDROOT)/hash_table/include
+SOURCE_C += hash_table.c hash_table_iterator.c
 
-# C source files
-SOURCE_C += $(TEST_C)
+STATIC_LIB = $(BUILD_DIR)/hash_table.a
 
-# Targets
-TARGET = $(BUILD_DIR)/$(TEST)
-
+# Include unit test module
 include $(BUILDROOT)/base.mk
-
-# Extra rules at the end
-cmocka: all
-	@echo "--- Cmocka $(TEST)"
-	-@$(TARGET) > $(BUILD_DIR)/$(TEST)_cmocka.xml
-
-valgrind: all
-	@echo "--- Valgrind $(TEST)"
-	-@valgrind --error-exitcode=1 --tool=memcheck --leak-check=full --xml=yes --xml-file=$(BUILD_DIR)/$(TEST)_valgrind.xml $(TARGET) > /dev/null 2>&1
-
-run: cmocka valgrind
-
-check: run
-	@echo "--- Checking $(TEST)"
-	@if [ "${shell xmllint --xpath 'string(//testsuites/testsuite/@failures)' $(BUILD_DIR)/$(TEST)_cmocka.xml}" != "0" ]; \
-		then cat $(BUILD_DIR)/$(TEST)_cmocka.xml && exit 1; \
-	fi
-	@if [ "${shell xmllint --xpath 'string(//valgrindoutput/error)' $(BUILD_DIR)/$(TEST)_valgrind.xml}" != "" ]; \
-		then cat $(BUILD_DIR)/$(TEST)_valgrind.xml && exit 1; \
-	fi

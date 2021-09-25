@@ -25,6 +25,7 @@
 CC = gcc
 MKDIR = mkdir
 RM = rm
+AR = ar
 
 # Build directory
 BUILD_DIR = _build
@@ -53,14 +54,18 @@ vpath %.c $(SOURCE_DIRS)
 
 # Normal make targets below
 
-all : $(TARGETS)
+all : $(TARGET) $(STATIC_LIB)
 
-$(TARGETS): $(OBJECTS)
-	@echo "--- CC $(OBJECTS)"
+$(TARGET): $(OBJECTS)
+	@echo "--- CC $(OBJECTS) --> $@"
 	@$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 
+$(STATIC_LIB): $(OBJECTS)
+	@echo "--- AR $(OBJECTS) --> $(STATIC_LIB)"
+	@$(AR) rcs -o $@ $(OBJECTS)
+
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
-	@echo "--- CC $<"
+	@echo "--- CC $< --> $@"
 	@$(CC) -c $(C_FLAGS) $(INCLUDES) $< -o $@
 
 $(BUILD_DIR):
