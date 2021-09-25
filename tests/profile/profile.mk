@@ -39,15 +39,21 @@ include $(BUILDROOT)/base.mk
 
 profile: $(TARGETS)
 	@echo "--- Profiling $(TEST)"
-	$(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4
+	@$(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4
 
 run: profile
 
 check: $(TARGETS)
 	@echo "--- Checking $(TEST)"
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | wc -l}" != "6" ]; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | wc -l}" != "7" ]; \
 		then echo "Failed to check length of symbols" && exit 1; \
 	fi
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | cut -d ' ' -f1,1 | paste -sd+ | bc}" != "959" ]; \
+		then echo "Failed to check sum of symbols" && exit 1; \
+	fi
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_function" | cut -d ' ' -f1,1}" != "0000000000000009" ]; \
+		then echo "Failed to check size of hash_table_function" && exit 1; \
+	fi	
 	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_iterator_init" | cut -d ' ' -f1,1}" != "0000000000000016" ]; \
 		then echo "Failed to check size of hash_table_iterator_init" && exit 1; \
 	fi
