@@ -5,7 +5,7 @@ RUN apt-get update \
     && apt-get -y install build-essential \
         valgrind libcmocka-dev \
         uncrustify libxml2-utils \
-        doxygen graphviz \
+        doxygen graphviz bc \
         uuid-dev valgrind \
     && apt-get autoremove -y \
     && apt-get clean -y \
