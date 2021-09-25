@@ -24,7 +24,7 @@
 SUBDIRS = code-style \
           doxygen \
           unittests \
-	      profile \
+          profile \
 
 .PHONY: all clean run
 
