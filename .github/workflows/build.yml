@@ -16,7 +16,7 @@ jobs:
     strategy:
         fail-fast: false
         matrix:
-            test: [ tests/unittests, tests/code-style, tests/doxygen ]
+            test: [ tests/unittests, tests/code-style, tests/doxygen, tests/profile ]
 
     steps:
 

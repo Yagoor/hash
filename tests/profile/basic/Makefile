@@ -21,14 +21,14 @@
 ## SOFTWARE.
 ##
 
-SUBDIRS = code-style \
-          doxygen \
-          unittests \
-	      profile \
+# Root directory
+BUILDROOT = ../../..
 
-.PHONY: all clean run
+# Test
+TEST = basic
 
-all clean run check:
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -C $$dir -f Makefile $@; \
-	done
+# Test source C files
+TEST_C = basic.c
+
+# Include unit test module
+include $(BUILDROOT)/tests/profile/profile.mk

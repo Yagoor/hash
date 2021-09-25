@@ -21,11 +21,8 @@
 ## SOFTWARE.
 ##
 
-SUBDIRS = code-style \
-          doxygen \
-          unittests \
-	      profile \
-
+SUBDIRS = basic \
+			
 .PHONY: all clean run
 
 all clean run check:
