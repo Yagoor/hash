@@ -24,7 +24,7 @@
  */
 
 /**
- * @file hash_table.c
+ * @file ht_iter.c
  *
  * @author Yago Fontoura do Rosario <yago.rosario@hotmail.com.br>
  */
