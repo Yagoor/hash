@@ -50,7 +50,7 @@ typedef struct {
       sizeof(basic_data_t)) * BASIC_HASH_ENTRIES_SIZE];
 } basic_ht_t;
 
-uint32_t basic_hash_function(uint8_t *key)
+static uint32_t basic_hash_function(uint8_t *key)
 {
   basic_key_t *basic_key;
 
@@ -160,8 +160,7 @@ int setup(void **state)
   }
 
   /* Initialize hash_table */
-  assert_true(ht_init((ht_t *)basic_hash,
-      (hash_function_t)basic_hash_function,
+  assert_true(ht_init((ht_t *)basic_hash, basic_hash_function,
       BASIC_HASH_ENTRIES_SIZE, sizeof(basic_data_t), sizeof(basic_key_t)));
 
   /* Populate hash_table ensuring that repeated keys is not allowed */

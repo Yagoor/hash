@@ -39,7 +39,7 @@
  *
  * @param hash_table Hash pointer
  * @param key Key
- * @return ht_entry_t* A pointer to the ht_iable entry found or NULL if not found
+ * @return ht_entry_t* A pointer to the hash table entry found or NULL if not found
  */
 static ht_entry_t *hash_find(ht_t *hash_table, uint8_t *key)
 {

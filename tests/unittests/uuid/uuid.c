@@ -53,7 +53,7 @@ typedef struct {
       sizeof(uuid_data_t)) * UUID_HASH_ENTRIES_SIZE];
 } uuid_ht_t;
 
-uint32_t uuid_hash_function(uint8_t *key)
+static uint32_t uuid_hash_function(uint8_t *key)
 {
   /* Hash djb2 */
   uint32_t hash = 5381;

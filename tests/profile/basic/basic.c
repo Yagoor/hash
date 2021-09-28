@@ -45,7 +45,7 @@ typedef struct {
       sizeof(basic_data_t)) * BASIC_HASH_ENTRIES_SIZE];
 } basic_ht_t;
 
-uint32_t ht_function(uint8_t *key)
+static uint32_t ht_function(uint8_t *key)
 {
   basic_key_t *basic_key;
 
@@ -64,9 +64,8 @@ int main(void)
   ht_iter_t ht_iterator;
   uint8_t key_checker[BASIC_HASH_ENTRIES_SIZE];
 
-  ht_init((ht_t *)&basic_hash,
-      (hash_function_t)ht_function,
-      BASIC_HASH_ENTRIES_SIZE, sizeof(basic_data_t), sizeof(basic_key_t));
+  ht_init((ht_t *)&basic_hash, ht_function, BASIC_HASH_ENTRIES_SIZE,
+      sizeof(basic_data_t), sizeof(basic_key_t));
 
   /* Populate hash_table ensuring that repeated keys is not allowed */
   for (i = 1; i <= BASIC_HASH_ENTRIES_SIZE; i++)
