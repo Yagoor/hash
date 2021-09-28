@@ -24,13 +24,16 @@
  */
 
 /**
- * @file hash_table_inline.h
+ * @file ht_inline.h
  *
  * @author Yago Fontoura do Rosario <yago.rosario@hotmail.com.br>
  */
 
-#ifndef HASH_INLINE_H
-#define HASH_INLINE_H
+#ifndef HT_INLINE_H
+#define HT_INLINE_H
+
+#include <stdint.h>
+#include "ht.h"
 
 /**
  * @brief Function to get the number of used entries in the hash_table
@@ -38,10 +41,10 @@
  * @param[in] hash_table Hash pointer
  * @return uint32_t Number of itens in the hash_table
  */
-static inline uint32_t hash_table_count(hash_table_t *hash_table)
+static inline uint32_t ht_count(ht_t *hash_table)
 {
   return (hash_table->count);
 }
 
 
-#endif /* HASH_INLINE_H */
+#endif /* HT_INLINE_H */

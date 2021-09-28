@@ -24,17 +24,17 @@
  */
 
 /**
- * @file hash_table.h
+ * @file ht.h
  *
  * @author Yago Fontoura do Rosario <yago.rosario@hotmail.com.br>
  */
 
-#ifndef HASH_TABLE_ITERATOR_H
-#define HASH_TABLE_ITERATOR_H
+#ifndef HT_ITER_H
+#define HT_ITER_H
 
 #include <stdint.h>
 
-#include "hash_table.h"
+#include "ht.h"
 
 /**
  * @brief Hash table iterator
@@ -51,29 +51,29 @@ typedef struct {
    * @brief Pointer to the hash table
    *
    */
-  hash_table_t *hash_table;
-} hash_table_iterator_t;
+  ht_t *        hash_table;
+} ht_iter_t;
 
 /**
  * @brief Function to initialize a hash table iterator
  *
- * @param[in] hash_table_iterator Hash table iterator pointer
+ * @param[in] ht_iterator Hash table iterator pointer
  * @param[in] hash_table Hash table pointer
  * @return uint8_t 1 if the hash table iterator was initialized else 0
  */
-uint8_t hash_table_iterator_init(hash_table_iterator_t *hash_table_iterator,
-    hash_table_t *hash_table);
+uint8_t ht_iter_init(ht_iter_t *ht_iterator,
+    ht_t *hash_table);
 
 /**
  * @brief Function to get the next key and data in the hash table
  *
- * @param[in] hash_table_iterator Hash table iterator pointer
+ * @param[in] ht_iterator Hash table iterator pointer
  * @param[in] hash_table Hash table pointer
  * @param[out] key Key pointer
  * @param[out] data Data pointer
  * @return uint8_t 1 if the there is a next item else 0
  */
-uint8_t hash_table_iterator_get_next(hash_table_iterator_t *hash_table_iterator,
-    hash_table_t *hash_table, uint8_t *key, uint8_t *data);
+uint8_t ht_iter_get_next(ht_iter_t *ht_iterator,
+    ht_t *hash_table, uint8_t *key, uint8_t *data);
 
-#endif /* HASH_TABLE_ITERATOR_H */
+#endif /* HT_ITER_H */

@@ -25,8 +25,8 @@
 
 #include <string.h>
 
-#include "hash_table.h"
-#include "hash_table_iterator.h"
+#include "ht.h"
+#include "ht_iter.h"
 
 typedef struct {
   uint32_t key;
@@ -40,12 +40,12 @@ typedef struct {
 #define BASIC_HASH_ENTRIES_SIZE    10
 
 typedef struct {
-  hash_table_t  hash_table;
-  uint8_t       data[(sizeof(hash_table_entry_t) + sizeof(basic_key_t) +
+  ht_t          hash_table;
+  uint8_t       data[(sizeof(ht_entry_t) + sizeof(basic_key_t) +
       sizeof(basic_data_t)) * BASIC_HASH_ENTRIES_SIZE];
-} basic_hash_table_t;
+} basic_ht_t;
 
-uint32_t hash_table_function(uint8_t *key)
+static uint32_t ht_function(uint8_t *key)
 {
   basic_key_t *basic_key;
 
@@ -60,13 +60,12 @@ int main(void)
   uint32_t i;
   basic_key_t basic_key;
   basic_data_t basic_data;
-  basic_hash_table_t basic_hash;
-  hash_table_iterator_t hash_table_iterator;
+  basic_ht_t basic_hash;
+  ht_iter_t ht_iterator;
   uint8_t key_checker[BASIC_HASH_ENTRIES_SIZE];
 
-  hash_table_init((hash_table_t *)&basic_hash,
-      (hash_function_t)hash_table_function,
-      BASIC_HASH_ENTRIES_SIZE, sizeof(basic_data_t), sizeof(basic_key_t));
+  ht_init((ht_t *)&basic_hash, ht_function, BASIC_HASH_ENTRIES_SIZE,
+      sizeof(basic_data_t), sizeof(basic_key_t));
 
   /* Populate hash_table ensuring that repeated keys is not allowed */
   for (i = 1; i <= BASIC_HASH_ENTRIES_SIZE; i++)
@@ -74,23 +73,23 @@ int main(void)
     basic_key.key = i;
     basic_data.x = i;
     basic_data.y = BASIC_HASH_ENTRIES_SIZE - i;
-    if (!(hash_table_insert((hash_table_t *)&basic_hash,
+    if (!(ht_insert((ht_t *)&basic_hash,
         (uint8_t *)&basic_key,
         (uint8_t *)&basic_data))) {
       return (1);
     }
 
     /* Check hash_table count */
-    if (!(hash_table_count((hash_table_t *)&basic_hash) == i)) {
+    if (!(ht_count((ht_t *)&basic_hash) == i)) {
       return (1);
     }
   }
 
   memset(key_checker, 0, sizeof(key_checker));
-  hash_table_iterator_init(&hash_table_iterator, (hash_table_t *)&basic_hash);
+  ht_iter_init(&ht_iterator, (ht_t *)&basic_hash);
 
-  while (hash_table_iterator_get_next(&hash_table_iterator,
-      (hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  while (ht_iter_get_next(&ht_iterator,
+      (ht_t *)&basic_hash, (uint8_t *)&basic_key,
       (uint8_t *)&basic_data))
   {
     if (!(key_checker[basic_key.key - 1] == 0)) {
@@ -112,7 +111,7 @@ int main(void)
 
   /* Try to insert when hash_table is full */
   basic_key.key = 20;
-  if (hash_table_insert((hash_table_t *)&basic_hash,
+  if (ht_insert((ht_t *)&basic_hash,
       (uint8_t *)&basic_key,
       (uint8_t *)&basic_data)) {
     return (1);
@@ -120,7 +119,7 @@ int main(void)
 
   /* Remove one item */
   basic_key.key = 9;
-  if (!(hash_table_remove((hash_table_t *)&basic_hash,
+  if (!(ht_remove((ht_t *)&basic_hash,
       (uint8_t *)&basic_key,
       (uint8_t *)&basic_data))) {
     return (1);
@@ -134,7 +133,7 @@ int main(void)
 
   /* Try to remove it again */
   basic_key.key = 9;
-  if (hash_table_remove((hash_table_t *)&basic_hash,
+  if (ht_remove((ht_t *)&basic_hash,
       (uint8_t *)&basic_key,
       (uint8_t *)&basic_data)) {
     return (1);
@@ -142,7 +141,7 @@ int main(void)
 
   /* Try to remove item that was not added */
   basic_key.key = 20;
-  if (hash_table_remove((hash_table_t *)&basic_hash,
+  if (ht_remove((ht_t *)&basic_hash,
       (uint8_t *)&basic_key,
       (uint8_t *)&basic_data)) {
     return (1);
@@ -150,7 +149,7 @@ int main(void)
 
   /* Get item from hash_table and check content */
   basic_key.key = 4;
-  if (!(hash_table_get((hash_table_t *)&basic_hash, (uint8_t *)&basic_key,
+  if (!(ht_get((ht_t *)&basic_hash, (uint8_t *)&basic_key,
       (uint8_t *)&basic_data))) {
     return (1);
   }
@@ -163,7 +162,7 @@ int main(void)
 
   /* Remove same item from hash_table */
   basic_key.key = 4;
-  if (!(hash_table_remove((hash_table_t *)&basic_hash,
+  if (!(ht_remove((ht_t *)&basic_hash,
       (uint8_t *)&basic_key,
       NULL))) {
     return (1);
@@ -171,7 +170,7 @@ int main(void)
 
   /* Try to get it again */
   basic_key.key = 4;
-  if (hash_table_get((hash_table_t *)&basic_hash,
+  if (ht_get((ht_t *)&basic_hash,
       (uint8_t *)&basic_key,
       (uint8_t *)&basic_data)) {
     return (1);

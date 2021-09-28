@@ -24,52 +24,51 @@
  */
 
 /**
- * @file hash_table.c
+ * @file ht_iter.c
  *
  * @author Yago Fontoura do Rosario <yago.rosario@hotmail.com.br>
  */
 
 #include <string.h>
 
-#include "hash_table_iterator.h"
+#include "ht_iter.h"
 
-uint8_t hash_table_iterator_init(hash_table_iterator_t *hash_table_iterator,
-    hash_table_t *hash_table)
+uint8_t ht_iter_init(ht_iter_t *ht_iterator, ht_t *hash_table)
 {
-  hash_table_iterator->current = 0;
-  hash_table_iterator->hash_table = hash_table;
+  ht_iterator->current = 0;
+  ht_iterator->hash_table = hash_table;
 
   return (1);
 }
 
 
-uint8_t hash_table_iterator_get_next(hash_table_iterator_t *hash_table_iterator,
-    hash_table_t *hash_table, uint8_t *key, uint8_t *data)
+uint8_t ht_iter_get_next(ht_iter_t *ht_iterator, ht_t *hash_table, uint8_t *key,
+    uint8_t *data)
 {
   uint32_t position;
   uint8_t *entries;
-  hash_table_entry_t *hash_entry;
+  ht_entry_t *hash_entry;
   uint8_t *hash_entry_key;
   uint8_t *hash_entry_data;
 
-  entries = (uint8_t *)hash_table + sizeof(hash_table_t);
+  entries = (uint8_t *)hash_table + sizeof(ht_t);
 
   /* Iterate over the entries */
-  for ( ; hash_table_iterator->current < hash_table->size;
-      hash_table_iterator->current++)
+  for ( ; ht_iterator->current < hash_table->size;
+      ht_iterator->current++)
   {
-    position = hash_table_iterator->current *
-        (sizeof(hash_table_entry_t) + hash_table->key_size +
+    position = ht_iterator->current *
+        (sizeof(ht_entry_t) + hash_table->key_size +
         hash_table->data_size);
-    hash_entry = (hash_table_entry_t *)(entries + position);
+    hash_entry = (ht_entry_t *)(entries + position);
 
     if (hash_entry->used) {
-      hash_entry_key = (uint8_t *)(hash_entry + sizeof(hash_table_entry_t));
+      hash_entry_key = (uint8_t *)(hash_entry + sizeof(ht_entry_t));
       hash_entry_data = (uint8_t *)(hash_entry_key + hash_table->key_size);
 
       memcpy(key, hash_entry_key, hash_table->key_size);
       memcpy(data, hash_entry_data, hash_table->data_size);
-      hash_table_iterator->current++;
+      ht_iterator->current++;
       return (1);
     }
   }
