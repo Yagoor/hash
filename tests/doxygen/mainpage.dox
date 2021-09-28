@@ -2,7 +2,7 @@
  *
  * \section section_introduction Introduction
  *
- * This is a generic hash_table table implementation using open addressing for collision solution
+ * This is a generic hash table table implementation using open addressing for collision solution
  *
  * \section section_example Example
  *
