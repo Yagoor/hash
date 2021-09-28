@@ -1,0 +1,104 @@
+## MIT License
+## 
+## Copyright (c) 2021 Yago Fontoura do Rosário <yago.rosario@hotmail.com.br>
+## 
+## Permission is hereby granted, free of charge, to any person obtaining a copy
+## of this software and associated documentation files (the "Software"), to deal
+## in the Software without restriction, including without limitation the rights
+## to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+## copies of the Software, and to permit persons to whom the Software is
+## furnished to do so, subject to the following conditions:
+## 
+## The above copyright notice and this permission notice shall be included in all
+## copies or substantial portions of the Software.
+## 
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+## IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+## FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+## AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+## LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+## SOFTWARE.
+##
+
+usage() {
+    echo "$0 TODO"
+    exit 1
+}
+
+CC=gcc
+AR=ar
+PREFIX=/usr/local
+DESTDIR=
+BUILDDIR=_build
+SHARED=0
+STATIC=0
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in 
+    --*=*)
+      VALUE=`echo $1 | sed 's/^[^=]*=//g'`
+      ;;
+  esac
+
+  case $key in
+    --prefix)
+      shift
+      PREFIX="$1"
+      shift
+      ;;
+    --prefix=*)
+      PREFIX="$VALUE"
+      shift
+      ;;
+    --destdir)
+      shift
+      DESTDIR="$1"
+      shift
+      ;;
+    --destdir=*)
+      DESTDIR="$VALUE"
+      shift
+      ;;
+    --builddir)
+      shift
+      BUILDDIR="$1"
+      shift
+      ;;
+    --builddir=*)
+      BUILDDIR="$VALUE"
+      shift
+      ;;
+    --shared)
+      SHARED=1
+      shift
+      ;;
+    --static)
+      STATIC=1
+      shift
+      ;;            
+    *)
+      shift
+      ;;
+  esac
+done
+
+if [ "$STATIC" == "0" -a "$SHARED" == "0" ]; then
+    usage
+fi
+
+# Escape invalid characters in sed
+
+# Replace the placemakers
+data=$(cat Makefile.in)
+data=`echo "$data" | sed "s|@cc@|$CC|g"`
+data=`echo "$data" | sed "s|@ar@|$AR|g"`
+data=`echo "$data" | sed "s|@destdir@|$DESTDIR|g"`
+data=`echo "$data" | sed "s|@prefix@|$PREFIX|g"`
+data=`echo "$data" | sed "s|@builddir@|$BUILDDIR|g"`
+data=`echo "$data" | sed "s|@shared@|$SHARED|g"`
+data=`echo "$data" | sed "s|@static@|$STATIC|g"`
+
+echo "$data" > Makefile

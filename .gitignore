@@ -19,3 +19,6 @@
 # Build
 _build
 docs
+
+# Auto generate files
+Makefile

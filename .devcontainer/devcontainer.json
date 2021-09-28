@@ -14,7 +14,8 @@
 		"ms-vscode.cpptools",
 		"zachflower.uncrustify",
 		"bbenoist.doxygen",
-		"cschlosser.doxdocgen"
+		"cschlosser.doxdocgen",
+		"eamodio.gitlens"
 	],
 
 	"postCreateCommand": "gcc -v",
