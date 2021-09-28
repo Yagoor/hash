@@ -24,24 +24,56 @@
  */
 
 /**
- * @file hash_table_inline.h
+ * @file ht.h
  *
  * @author Yago Fontoura do Rosario <yago.rosario@hotmail.com.br>
  */
 
-#ifndef HASH_INLINE_H
-#define HASH_INLINE_H
+#ifndef HT_ITER_H
+#define HT_ITER_H
+
+#include <stdint.h>
+
+#include "ht.h"
 
 /**
- * @brief Function to get the number of used entries in the hash_table
+ * @brief Hash table iterator
  *
- * @param[in] hash_table Hash pointer
- * @return uint32_t Number of itens in the hash_table
  */
-static inline uint32_t hash_table_count(hash_table_t *hash_table)
-{
-  return (hash_table->count);
-}
+typedef struct {
+  /**
+   * @brief Current index in entries
+   *
+   */
+  uint32_t      current;
 
+  /**
+   * @brief Pointer to the hash table
+   *
+   */
+  ht_t *        hash_table;
+} ht_iter_t;
 
-#endif /* HASH_INLINE_H */
+/**
+ * @brief Function to initialize a hash table iterator
+ *
+ * @param[in] ht_iterator Hash table iterator pointer
+ * @param[in] hash_table Hash table pointer
+ * @return uint8_t 1 if the hash table iterator was initialized else 0
+ */
+uint8_t ht_iterator_init(ht_iter_t *ht_iterator,
+    ht_t *hash_table);
+
+/**
+ * @brief Function to get the next key and data in the hash table
+ *
+ * @param[in] ht_iterator Hash table iterator pointer
+ * @param[in] hash_table Hash table pointer
+ * @param[out] key Key pointer
+ * @param[out] data Data pointer
+ * @return uint8_t 1 if the there is a next item else 0
+ */
+uint8_t ht_iterator_get_next(ht_iter_t *ht_iterator,
+    ht_t *hash_table, uint8_t *key, uint8_t *data);
+
+#endif /* HT_ITER_H */

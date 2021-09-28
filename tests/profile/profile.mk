@@ -25,7 +25,7 @@ NM = nm
 
 SOURCE_DIRS += $(BUILDROOT)/hash_table/src
 C_FLAGS += -I$(BUILDROOT)/hash_table/include
-SOURCE_C += hash_table.c hash_table_iterator.c
+SOURCE_C += ht.c ht_iter.c
 
 # C source files
 SOURCE_C += $(TEST_C)
@@ -51,24 +51,24 @@ check: $(TARGETS)
 	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | cut -d ' ' -f1,1 | paste -sd+ | bc}" != "959" ]; \
 		then echo "Failed to check sum of symbols" && exit 1; \
 	fi
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_function" | cut -d ' ' -f1,1}" != "0000000000000009" ]; \
-		then echo "Failed to check size of hash_table_function" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "ht_function" | cut -d ' ' -f1,1}" != "0000000000000009" ]; \
+		then echo "Failed to check size of ht_function" && exit 1; \
 	fi	
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_iterator_init" | cut -d ' ' -f1,1}" != "0000000000000016" ]; \
-		then echo "Failed to check size of hash_table_iterator_init" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "ht_iterator_init" | cut -d ' ' -f1,1}" != "0000000000000016" ]; \
+		then echo "Failed to check size of ht_iterator_init" && exit 1; \
 	fi
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_init" | cut -d ' ' -f1,1}" != "0000000000000062" ]; \
-		then echo "Failed to check size of hash_table_init" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "ht_init" | cut -d ' ' -f1,1}" != "0000000000000062" ]; \
+		then echo "Failed to check size of ht_init" && exit 1; \
 	fi
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_iterator_get_next" | cut -d ' ' -f1,1}" != "0000000000000165" ]; \
-		then echo "Failed to check size of hash_table_iterator_get_next" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "ht_iterator_get_next" | cut -d ' ' -f1,1}" != "0000000000000165" ]; \
+		then echo "Failed to check size of ht_iterator_get_next" && exit 1; \
 	fi
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_get" | cut -d ' ' -f1,1}" != "0000000000000203" ]; \
-		then echo "Failed to check size of hash_table_get" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "ht_get" | cut -d ' ' -f1,1}" != "0000000000000203" ]; \
+		then echo "Failed to check size of ht_get" && exit 1; \
 	fi
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_insert" | cut -d ' ' -f1,1}" != "0000000000000217" ]; \
-		then echo "Failed to check size of hash_table_insert" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "ht_insert" | cut -d ' ' -f1,1}" != "0000000000000217" ]; \
+		then echo "Failed to check size of ht_insert" && exit 1; \
 	fi
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "hash_table_remove" | cut -d ' ' -f1,1}" != "0000000000000287" ]; \
-		then echo "Failed to check size of hash_table_remove" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "hash_table" | cut -d ' ' -f2,4 | grep "ht_remove" | cut -d ' ' -f1,1}" != "0000000000000287" ]; \
+		then echo "Failed to check size of ht_remove" && exit 1; \
 	fi

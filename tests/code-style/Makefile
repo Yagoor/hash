@@ -49,6 +49,8 @@ MODULES += tests
 MODULES += tests/code-style
 MODULES += tests/unittests
 MODULES += tests/unittests/*
+MODULES += tests/profile
+MODULES += tests/profile/*
 
 # Source directories
 SOURCE_DIRS = $(addprefix $(BUILDROOT)/, $(MODULES))

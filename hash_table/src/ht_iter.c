@@ -24,56 +24,55 @@
  */
 
 /**
- * @file hash_table.h
+ * @file hash_table.c
  *
  * @author Yago Fontoura do Rosario <yago.rosario@hotmail.com.br>
  */
 
-#ifndef HASH_TABLE_ITERATOR_H
-#define HASH_TABLE_ITERATOR_H
+#include <string.h>
 
-#include <stdint.h>
+#include "ht_iter.h"
 
-#include "hash_table.h"
+uint8_t ht_iterator_init(ht_iter_t *ht_iterator,
+    ht_t *hash_table)
+{
+  ht_iterator->current = 0;
+  ht_iterator->hash_table = hash_table;
 
-/**
- * @brief Hash table iterator
- *
- */
-typedef struct {
-  /**
-   * @brief Current index in entries
-   *
-   */
-  uint32_t      current;
+  return (1);
+}
 
-  /**
-   * @brief Pointer to the hash table
-   *
-   */
-  hash_table_t *hash_table;
-} hash_table_iterator_t;
 
-/**
- * @brief Function to initialize a hash table iterator
- *
- * @param[in] hash_table_iterator Hash table iterator pointer
- * @param[in] hash_table Hash table pointer
- * @return uint8_t 1 if the hash table iterator was initialized else 0
- */
-uint8_t hash_table_iterator_init(hash_table_iterator_t *hash_table_iterator,
-    hash_table_t *hash_table);
+uint8_t ht_iterator_get_next(ht_iter_t *ht_iterator,
+    ht_t *hash_table, uint8_t *key, uint8_t *data)
+{
+  uint32_t position;
+  uint8_t *entries;
+  ht_entry_t *hash_entry;
+  uint8_t *hash_entry_key;
+  uint8_t *hash_entry_data;
 
-/**
- * @brief Function to get the next key and data in the hash table
- *
- * @param[in] hash_table_iterator Hash table iterator pointer
- * @param[in] hash_table Hash table pointer
- * @param[out] key Key pointer
- * @param[out] data Data pointer
- * @return uint8_t 1 if the there is a next item else 0
- */
-uint8_t hash_table_iterator_get_next(hash_table_iterator_t *hash_table_iterator,
-    hash_table_t *hash_table, uint8_t *key, uint8_t *data);
+  entries = (uint8_t *)hash_table + sizeof(ht_t);
 
-#endif /* HASH_TABLE_ITERATOR_H */
+  /* Iterate over the entries */
+  for ( ; ht_iterator->current < hash_table->size;
+      ht_iterator->current++)
+  {
+    position = ht_iterator->current *
+        (sizeof(ht_entry_t) + hash_table->key_size +
+        hash_table->data_size);
+    hash_entry = (ht_entry_t *)(entries + position);
+
+    if (hash_entry->used) {
+      hash_entry_key = (uint8_t *)(hash_entry + sizeof(ht_entry_t));
+      hash_entry_data = (uint8_t *)(hash_entry_key + hash_table->key_size);
+
+      memcpy(key, hash_entry_key, hash_table->key_size);
+      memcpy(data, hash_entry_data, hash_table->data_size);
+      ht_iterator->current++;
+      return (1);
+    }
+  }
+
+  return (0);
+}
