@@ -25,8 +25,8 @@ C_FLAGS += -Wall -Wextra -Wpedantic
 C_FLAGS += -fprofile-arcs -ftest-coverage -fstack-protector-all
 LDFLAGS += -lcmocka -lgcov --coverage
 
-SOURCE_DIRS += $(BUILDROOT)/hash_table/src
-C_FLAGS += -I$(BUILDROOT)/hash_table/include
+SOURCE_DIRS += $(BUILDROOT)/src
+C_FLAGS += -I$(BUILDROOT)/include
 SOURCE_C += ht.c ht_iter.c
 
 # C source files

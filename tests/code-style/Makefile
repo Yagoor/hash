@@ -43,8 +43,8 @@ BUILD_DIR = _build
 # Modules
 MODULES = 
 MODULES += .
-MODULES += hash_table/src 
-MODULES += hash_table/include
+MODULES += src 
+MODULES += include
 MODULES += tests
 MODULES += tests/code-style
 MODULES += tests/unittests

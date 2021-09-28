@@ -23,8 +23,8 @@
 
 NM = nm
 
-SOURCE_DIRS += $(BUILDROOT)/hash_table/src
-C_FLAGS += -I$(BUILDROOT)/hash_table/include
+SOURCE_DIRS += $(BUILDROOT)/src
+C_FLAGS += -I$(BUILDROOT)/include
 SOURCE_C += ht.c ht_iter.c
 
 # C source files
