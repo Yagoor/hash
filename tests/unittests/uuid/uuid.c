@@ -140,9 +140,9 @@ void test_uuid_hash_iterator(void **state)
   uuid_hash = (*(uuid_ht_t *)(*state));
 
   memset(data_checker, 0, sizeof(data_checker));
-  ht_iterator_init(&ht_iterator, (ht_t *)&uuid_hash);
+  ht_iter_init(&ht_iterator, (ht_t *)&uuid_hash);
 
-  while (ht_iterator_get_next(&ht_iterator,
+  while (ht_iter_get_next(&ht_iterator,
       (ht_t *)&uuid_hash, (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data))
   {

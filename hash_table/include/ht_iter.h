@@ -61,7 +61,7 @@ typedef struct {
  * @param[in] hash_table Hash table pointer
  * @return uint8_t 1 if the hash table iterator was initialized else 0
  */
-uint8_t ht_iterator_init(ht_iter_t *ht_iterator,
+uint8_t ht_iter_init(ht_iter_t *ht_iterator,
     ht_t *hash_table);
 
 /**
@@ -73,7 +73,7 @@ uint8_t ht_iterator_init(ht_iter_t *ht_iterator,
  * @param[out] data Data pointer
  * @return uint8_t 1 if the there is a next item else 0
  */
-uint8_t ht_iterator_get_next(ht_iter_t *ht_iterator,
+uint8_t ht_iter_get_next(ht_iter_t *ht_iterator,
     ht_t *hash_table, uint8_t *key, uint8_t *data);
 
 #endif /* HT_ITER_H */

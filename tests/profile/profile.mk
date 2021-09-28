@@ -54,14 +54,14 @@ check: $(TARGETS)
 	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "ht" | cut -d ' ' -f2,4 | grep "ht_function" | cut -d ' ' -f1,1}" != "0000000000000009" ]; \
 		then echo "Failed to check size of ht_function" && exit 1; \
 	fi	
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "ht" | cut -d ' ' -f2,4 | grep "ht_iterator_init" | cut -d ' ' -f1,1}" != "0000000000000016" ]; \
-		then echo "Failed to check size of ht_iterator_init" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "ht" | cut -d ' ' -f2,4 | grep "ht_iter_init" | cut -d ' ' -f1,1}" != "0000000000000016" ]; \
+		then echo "Failed to check size of ht_iter_init" && exit 1; \
 	fi
 	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "ht" | cut -d ' ' -f2,4 | grep "ht_init" | cut -d ' ' -f1,1}" != "0000000000000062" ]; \
 		then echo "Failed to check size of ht_init" && exit 1; \
 	fi
-	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "ht" | cut -d ' ' -f2,4 | grep "ht_iterator_get_next" | cut -d ' ' -f1,1}" != "0000000000000165" ]; \
-		then echo "Failed to check size of ht_iterator_get_next" && exit 1; \
+	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "ht" | cut -d ' ' -f2,4 | grep "ht_iter_get_next" | cut -d ' ' -f1,1}" != "0000000000000165" ]; \
+		then echo "Failed to check size of ht_iter_get_next" && exit 1; \
 	fi
 	@if [ "${shell $(NM) -S -td --size-sort $< | grep -i " [t] " | grep "ht" | cut -d ' ' -f2,4 | grep "ht_get" | cut -d ' ' -f1,1}" != "0000000000000203" ]; \
 		then echo "Failed to check size of ht_get" && exit 1; \

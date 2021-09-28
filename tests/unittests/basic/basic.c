@@ -127,9 +127,9 @@ void test_basic_hash_iterator(void **state)
   basic_hash = (*(basic_ht_t *)(*state));
 
   memset(key_checker, 0, sizeof(key_checker));
-  ht_iterator_init(&ht_iterator, (ht_t *)&basic_hash);
+  ht_iter_init(&ht_iterator, (ht_t *)&basic_hash);
 
-  while (ht_iterator_get_next(&ht_iterator,
+  while (ht_iter_get_next(&ht_iterator,
       (ht_t *)&basic_hash, (uint8_t *)&basic_key,
       (uint8_t *)&basic_data))
   {

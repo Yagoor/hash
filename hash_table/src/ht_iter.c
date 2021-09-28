@@ -33,7 +33,7 @@
 
 #include "ht_iter.h"
 
-uint8_t ht_iterator_init(ht_iter_t *ht_iterator,
+uint8_t ht_iter_init(ht_iter_t *ht_iterator,
     ht_t *hash_table)
 {
   ht_iterator->current = 0;
@@ -43,7 +43,7 @@ uint8_t ht_iterator_init(ht_iter_t *ht_iterator,
 }
 
 
-uint8_t ht_iterator_get_next(ht_iter_t *ht_iterator,
+uint8_t ht_iter_get_next(ht_iter_t *ht_iterator,
     ht_t *hash_table, uint8_t *key, uint8_t *data)
 {
   uint32_t position;
