@@ -50,5 +50,4 @@ jobs:
     - name: Commit docs
       run: |
         git add -f docs
-        git commit -m "Docs"
-        git push -f
+
