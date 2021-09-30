@@ -1,10 +1,8 @@
 name: Publish
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  create:
+    branches: [ master, feature/release ]
 
 jobs:
   publish:
@@ -41,9 +39,9 @@ jobs:
 
     - name: Release
       run: |
-        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && mkdir -p build && cd build && ls -lah && tar -czf libht.tar.gz usr/ "
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && mkdir -p build && cd build && ls -lah && tar -czf libht-$GITHUB_REF.tar.gz usr/ "
 
     - uses: actions/upload-artifact@v2
       with:
-        name: libht.tar.gz
-        path: build/libht.tar.gz
+        name: libht-$GITHUB_REF.tar.gz
+        path: build/libht-$GITHUB_REF.tar.gz
