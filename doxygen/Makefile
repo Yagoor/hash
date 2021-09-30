@@ -21,12 +21,20 @@
 ## SOFTWARE.
 ##
 
-SUBDIRS = basic \
-          uuid \
-			
-.PHONY: all clean run
+# Root directory
+BUILDROOT = ..
 
-all clean run check:
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -C $$dir -f Makefile $@; \
-	done
+# Build directory
+BUILD_DIR = docs
+
+# Source directories
+SOURCE_DIRS = $(addprefix $(BUILDROOT)/, $(MODULES))
+
+all run check:
+	@echo "--- DOXYGEN Doxyfile"
+	@export BUILDROOT='$(BUILDROOT)' \
+	&& doxygen Doxyfile -v > /dev/null
+
+clean:
+	@echo "--- RM $(BUILDROOT)/$(BUILD_DIR)"
+	@rm -rf $(BUILDROOT)/$(BUILD_DIR)

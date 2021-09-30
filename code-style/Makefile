@@ -35,7 +35,7 @@
 #########################################################################
 
 # Root directory
-BUILDROOT = ../..
+BUILDROOT = ..
 
 # Build directory
 BUILD_DIR = _build
@@ -45,12 +45,10 @@ MODULES =
 MODULES += .
 MODULES += src 
 MODULES += include
+MODULES += doxygen
+MODULES += code-style
 MODULES += tests
-MODULES += tests/code-style
-MODULES += tests/unittests
-MODULES += tests/unittests/*
-MODULES += tests/profile
-MODULES += tests/profile/*
+MODULES += tests/*
 
 # Source directories
 SOURCE_DIRS = $(addprefix $(BUILDROOT)/, $(MODULES))
@@ -58,7 +56,7 @@ SOURCE_DIRS = $(addprefix $(BUILDROOT)/, $(MODULES))
 # Source files
 SOURCE_C += $(foreach d, $(SOURCE_DIRS), $(wildcard $(d)/*.c))
 SOURCE_H += $(foreach d, $(SOURCE_DIRS), $(wildcard $(d)/*.h))
-SOURCE_MK += $(foreach d, $(SOURCE_DIRS), $(wildcard $(d)/*.mk))
+SOURCE_MK += $(foreach d, $(SOURCE_DIRS), $(wildcard $(d)/*.in))
 SOURCE_MK += $(foreach d, $(SOURCE_DIRS), $(wildcard $(d)/Makefile))
 
 # Sources
@@ -83,7 +81,7 @@ $(BUILD_DIR)/%.h.o: %.h
 	@echo "--- UNCRUSTIFY $<"
 	@uncrustify -q -c uncrustify.cfg -f $< | diff -u $< --to-file=/dev/stdin
 
-$(BUILD_DIR)/%.mk.o: %.mk
+$(BUILD_DIR)/%.in.o: %.in
 	@echo "--- CHECK $<"
 	@if [ "${shell tail -c 1 '$<'}" != "" ]; then cat $< && exit 1; fi
 	

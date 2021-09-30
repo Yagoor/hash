@@ -1,0 +1,130 @@
+## MIT License
+## 
+## Copyright (c) 2021 Yago Fontoura do Rosário <yago.rosario@hotmail.com.br>
+## 
+## Permission is hereby granted, free of charge, to any person obtaining a copy
+## of this software and associated documentation files (the "Software"), to deal
+## in the Software without restriction, including without limitation the rights
+## to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+## copies of the Software, and to permit persons to whom the Software is
+## furnished to do so, subject to the following conditions:
+## 
+## The above copyright notice and this permission notice shall be included in all
+## copies or substantial portions of the Software.
+## 
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+## IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+## FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+## AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+## LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+## OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+## SOFTWARE.
+##
+
+# Placemakers
+CC = @cc@
+AR = @ar@
+PREFIX = @prefix@
+SHARED = @shared@
+STATIC = @static@
+ROOTDIR = @rootdir@
+DEBUG = @debug@
+
+LIB_SOURCEDIR = $(ROOTDIR)/src
+LIB_INCLUDEDIR = $(ROOTDIR)/include
+
+LIB_STATIC = libht.a
+LIB_SHARED = libht.so
+
+# General options
+LIB_CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -fPIC -MMD -MP
+
+# Remove optmization and add debug flag if in debug mode
+ifeq ($(DEBUG), 1)
+LIB_CFLAGS += -O0 -g 
+else
+LIB_CFLAGS += -O3 -Werror
+endif
+
+LIB_OBJECTS = ht.o ht_iter.o
+LIB_DEPS = ht.d ht_iter.d
+LIB_INCLUDES = -I $(LIB_INCLUDEDIR)
+
+vpath %.c $(LIB_SOURCEDIR)
+
+LIB_TARGETS =
+ifeq ($(SHARED), 1)
+LIB_TARGETS += $(LIB_SHARED)
+endif
+ifeq ($(STATIC), 1)
+LIB_TARGETS += $(LIB_STATIC)
+endif
+
+all: $(LIB_TARGETS)
+
+ht.o: ht.c
+	$(CC) -c $(LIB_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+ht_iter.o: ht_iter.c
+	$(CC) -c $(LIB_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+$(LIB_STATIC): ht.o ht_iter.o
+	$(AR) rcs -o $@ $^
+
+$(LIB_SHARED): ht.o ht_iter.o
+	$(CC) -shared $^ -o $@
+
+install: $(LIB_TARGETS)
+	install -d $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 $^ $(DESTDIR)$(PREFIX)/lib/
+	install -d $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(LIB_INCLUDEDIR)/* $(DESTDIR)$(PREFIX)/include/
+
+-include $(LIB_DEPS)
+
+TEST_SOURCEDIR += $(ROOTDIR)/tests/basic
+TEST_SOURCEDIR += $(ROOTDIR)/tests/uuid
+
+vpath %.c $(TEST_SOURCEDIR)
+
+TEST_SOURCE_C = basic.c uuid.c uuids.c
+TEST_OBJECTS = basic.o uuid.o uuids.o
+TEST_DEPS = basic.d uuid.d uuids.d
+TEST_GCOV = basic.gcda uuid.gcda uuids.gcda
+TEST_GCOV += basic.gcno uuid.gcno uuids.gcno
+TEST_CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -fPIC -MMD -MP \
+				-fprofile-arcs -ftest-coverage -fstack-protector-all
+TEST_LDFLAGS = -lcmocka -lgcov --coverage -L . -lht
+
+basic.o: basic.c
+	$(CC) -c $(TEST_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+uuid.o: uuid.c
+	$(CC) -c $(TEST_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+uuids.o: uuids.c
+	$(CC) -c $(TEST_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+basic.test: basic.o $(LIB_TARGETS)
+	$(CC) -o $@ $^ $(TEST_LDFLAGS)
+
+uuid.test: uuid.o uuids.o $(LIB_TARGETS)
+	$(CC) -o $@ $^ $(TEST_LDFLAGS) -luuid
+
+%.testlog: %.test
+	-@./$< > $@_cmocka.xml
+	-@valgrind --error-exitcode=1 --tool=memcheck --leak-check=full --xml=yes --xml-file=$@_valgrind.xml ./$< > /dev/null 2>&1
+
+%.check: %.testlog
+	@if [ "${shell xmllint --xpath 'string(//testsuites/testsuite/@failures)' $<_cmocka.xml}" != "0" ]; \
+		then cat $<_cmocka.xml && exit 1; \
+	fi
+	@if [ "${shell xmllint --xpath 'string(//valgrindoutput/error)' $<_valgrind.xml}" != "" ]; \
+		then cat $<_valgrind.xml && exit 1; \
+	fi
+
+clean:
+	rm -rf $(LIB_DEPS) $(LIB_OBJECTS) $(LIB_TARGETS) $(TEST_OBJECTS) $(TEST_DEPS) \
+			$(TEST_GCOV) *.test *.testlog *_cmocka.xml *_valgrind.xml
+
+-include $(TEST_DEPS)

@@ -21,20 +21,65 @@
 ## SOFTWARE.
 ##
 
-# Root directory
-BUILDROOT = ../..
+usage() {
+    echo "$0 TODO"
+    exit 1
+}
 
-# Build directory
-BUILD_DIR = docs
+CC=gcc
+AR=ar
+PREFIX=/usr/local
+SHARED=0
+STATIC=1
+DEBUG=0
 
-# Source directories
-SOURCE_DIRS = $(addprefix $(BUILDROOT)/, $(MODULES))
+while [[ $# -gt 0 ]]; do
+  key="$1"
 
-all run check:
-	@echo "--- DOXYGEN Doxyfile"
-	@export BUILDROOT='$(BUILDROOT)' \
-	&& doxygen Doxyfile -v > /dev/null
+  case $key in 
+    --*=*)
+      VALUE=`echo $1 | sed 's/^[^=]*=//g'`
+      ;;
+  esac
 
-clean:
-	@echo "--- RM $(BUILDROOT)/$(BUILD_DIR)"
-	@rm -rf $(BUILDROOT)/$(BUILD_DIR)
+  case $key in
+    --prefix)
+      shift
+      PREFIX="$1"
+      shift
+      ;;
+    --prefix=*)
+      PREFIX="$VALUE"
+      shift
+      ;;
+    --shared)
+      SHARED=1
+      shift
+      ;;
+    --no-static)
+      STATIC=0
+      shift
+      ;;
+    --debug)
+      DEBUG=1
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+ROOTDIR=$(dirname "$0")
+
+# Replace the placemakers
+data=$(cat $ROOTDIR/Makefile.in)
+data=`echo "$data" | sed "s|@cc@|$CC|g"`
+data=`echo "$data" | sed "s|@ar@|$AR|g"`
+data=`echo "$data" | sed "s|@prefix@|$PREFIX|g"`
+data=`echo "$data" | sed "s|@shared@|$SHARED|g"`
+data=`echo "$data" | sed "s|@static@|$STATIC|g"`
+data=`echo "$data" | sed "s|@rootdir@|$ROOTDIR|g"`
+data=`echo "$data" | sed "s|@debug@|$DEBUG|g"`
+
+echo "$data" > Makefile

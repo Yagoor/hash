@@ -1,0 +1,50 @@
+name: Publish
+
+on:
+  create:
+    branches: [ master, feature/release ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    env:
+        DOCKER_IMG: publish
+
+    steps:
+
+    - uses: actions/checkout@v2
+      with:
+          fetch-depth: '0'
+          submodules: 'recursive'
+          persist-credentials: false
+
+    - name: Set env
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    - name: Build docker image 
+      run: |
+        echo Building from dockerfile
+        docker build .devcontainer -t $DOCKER_IMG --no-cache --pull
+
+    - name: Ownership
+      run: |
+        # Set permissions for Docker mount
+        sudo chown -R 1000:1000 .
+
+    - name: Build
+      run: |
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && mkdir -p build && cd build && ../configure --prefix=/usr --shared && make"
+
+    - name: Publish
+      run: |
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && mkdir -p build && cd build && make DESTDIR=. install "
+
+    - name: Release
+      run: |
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && mkdir -p build && cd build && ls -lah && tar -czf libht-${{ env.RELEASE_VERSION }}.tar.gz usr/ "
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: libht-${{ env.RELEASE_VERSION }}.tar.gz
+        path: build/libht-${{ env.RELEASE_VERSION }}.tar.gz
