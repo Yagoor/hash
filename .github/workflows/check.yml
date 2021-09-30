@@ -7,11 +7,11 @@ on:
     branches: [ master ]
 
 jobs:
-  libht:
+  check:
     runs-on: ubuntu-latest
 
     env:
-        DOCKER_IMG: libht
+        DOCKER_IMG: check
 
     strategy:
         fail-fast: false
@@ -36,4 +36,4 @@ jobs:
         # Set permissions for Docker mount
         sudo chown -R 1000:1000 .
         # Run test
-        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && make -C '${{ matrix.test }}' check -k"
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && make -C '${{ matrix.test }}' check -k"
