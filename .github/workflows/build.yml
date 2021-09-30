@@ -12,7 +12,7 @@ jobs:
 
     env:
         DOCKER_IMG: libht
-        COMMANDS: "cd /workspaces/libht && mkdir -p build && cd build && ./configure && make"
+        COMMANDS: "cd /workspaces/libht && mkdir -p build && cd build && ../configure && make"
 
     steps:
 
