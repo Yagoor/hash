@@ -19,6 +19,3 @@
 # Build
 build
 docs
-
-# Auto generate files
-Makefile
