@@ -31,8 +31,8 @@ AR=ar
 PREFIX=/usr/local
 DESTDIR=
 BUILDDIR=_build
-SHARED=0
-STATIC=0
+SHARED=1
+STATIC=1
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -71,12 +71,12 @@ while [[ $# -gt 0 ]]; do
       BUILDDIR="$VALUE"
       shift
       ;;
-    --shared)
-      SHARED=1
+    --no-shared)
+      SHARED=0
       shift
       ;;
-    --static)
-      STATIC=1
+    --no-static)
+      STATIC=0
       shift
       ;;            
     *)
@@ -84,10 +84,6 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
-
-if [ "$STATIC" == "0" -a "$SHARED" == "0" ]; then
-    usage
-fi
 
 # Escape invalid characters in sed
 

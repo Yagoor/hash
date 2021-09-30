@@ -63,7 +63,7 @@ ifeq ($(STATIC), 1)
 TARGETS += $(STATIC_LIB)
 endif
 
-all : $(TARGETS)
+all: $(TARGETS)
 
 $(STATIC_LIB): $(OBJECTS)
 	$(AR) rcs -o $@ $^
@@ -77,7 +77,7 @@ $(BUILDDIR)/%.o: %.c | $(BUILDDIR)
 $(BUILDDIR):
 	mkdir -p $@
 
-clean :
+clean:
 	rm -rf $(BUILDDIR) $(DESTDIR)
 
 install: $(TARGETS)
