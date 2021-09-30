@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 on:
   push:
@@ -12,6 +12,7 @@ jobs:
 
     env:
         DOCKER_IMG: libht
+        COMMANDS: "cd /workspaces/libht && mkdir -p build && cd build && ./configure && make"
 
     strategy:
         fail-fast: false
@@ -30,9 +31,10 @@ jobs:
       run: |
         echo Building from dockerfile
         docker build .devcontainer -t $DOCKER_IMG --no-cache --pull
-    - name: Execute tests
+
+    - name: Build
       run: |
         # Set permissions for Docker mount
         sudo chown -R 1000:1000 .
         # Run test
-        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && make -C '${{ matrix.test }}' check -k"
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "$COMMANDS"

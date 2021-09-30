@@ -1,29 +1,25 @@
-name: Doxygen
+name: Check
 
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  doxygen:
+  libht:
     runs-on: ubuntu-latest
 
     env:
-        DOCKER_IMG: doxygen
+        DOCKER_IMG: libht
 
     steps:
 
     - uses: actions/checkout@v2
       with:
-        ref: master
-
-    - name: Reset docs with master
-      run: |
-        git config user.name 'GitHub'
-        git config user.email 'noreply@github.com'      
-        git fetch
-        git checkout docs
-        git reset --hard master
+          fetch-depth: '0'
+          submodules: 'recursive'
+          persist-credentials: false
 
     - name: Build docker image 
       run: |
@@ -32,11 +28,7 @@ jobs:
 
     - name: Execute tests
       run: |
+        # Set permissions for Docker mount
+        sudo chown -R 1000:1000 .
         # Run test
         docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && make -C 'doxygen' check -k"
-
-    - name: Commit docs
-      run: |
-        git add -f docs
-        git commit -m "Docs"
-        git push -f
