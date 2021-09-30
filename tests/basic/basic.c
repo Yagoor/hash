@@ -70,7 +70,7 @@ void test_basic_hash(void **state)
 
   /* Try to insert when hash_table is full */
   basic_key.key = 20;
-  assert_false(ht_insert((ht_t *)&basic_hash,
+  assert_true(ht_insert((ht_t *)&basic_hash,
       (uint8_t *)&basic_key,
       (uint8_t *)&basic_data));
 
