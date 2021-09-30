@@ -17,7 +17,7 @@
 # Windows specific
 
 # Build
-_build
+build
 docs
 
 # Auto generate files

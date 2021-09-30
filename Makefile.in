@@ -24,66 +24,107 @@
 # Placemakers
 CC = @cc@
 AR = @ar@
-DESTDIR = @destdir@
 PREFIX = @prefix@
-BUILDDIR = @builddir@
 SHARED = @shared@
 STATIC = @static@
+ROOTDIR = @rootdir@
+DEBUG = @debug@
 
-SOURCE_DIRS += src
-INCLUDE_DIRS += include
-SOURCE_C += ht.c ht_iter.c
+LIB_SOURCEDIR = $(ROOTDIR)/src
+LIB_INCLUDEDIR = $(ROOTDIR)/include
 
-STATIC_LIB = $(BUILDDIR)/libht.a
-SHARED_LIB = $(BUILDDIR)/libht.so
+LIB_STATIC = libht.a
+LIB_SHARED = libht.so
 
 # General options
-C_FLAGS = -Wall -std=c11 -fPIC -MMD -MP
+LIB_CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -fPIC -MMD -MP
 
 # Remove optmization and add debug flag if in debug mode
 ifeq ($(DEBUG), 1)
-C_FLAGS += -O0 -g 
+LIB_CFLAGS += -O0 -g 
 else
-C_FLAGS += -O3 -Werror
+LIB_CFLAGS += -O3 -Werror
 endif
 
-OBJECTS += $(foreach m, $(SOURCE_C), $(addprefix $(BUILDDIR)/, $(addsuffix .o,$(basename $(m)))))
+LIB_OBJECTS = ht.o ht_iter.o
+LIB_DEPS = ht.d ht_iter.d
+LIB_INCLUDES = -I $(LIB_INCLUDEDIR)
 
-DEPS += $(foreach m, $(SOURCE_C), $(addprefix $(BUILDDIR)/, $(addsuffix .d,$(basename $(m)))))
+vpath %.c $(LIB_SOURCEDIR)
 
-INCLUDES = $(foreach m, $(INCLUDE_DIRS), $(addprefix -I , $(m)/))
-
-vpath %.c $(SOURCE_DIRS)
-
-TARGETS =
+LIB_TARGETS =
 ifeq ($(SHARED), 1)
-TARGETS += $(SHARED_LIB)
+LIB_TARGETS += $(LIB_SHARED)
 endif
 ifeq ($(STATIC), 1)
-TARGETS += $(STATIC_LIB)
+LIB_TARGETS += $(LIB_STATIC)
 endif
 
-all: $(TARGETS)
+all: $(LIB_TARGETS)
 
-$(STATIC_LIB): $(OBJECTS)
+ht.o: ht.c
+	$(CC) -c $(LIB_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+ht_iter.o: ht_iter.c
+	$(CC) -c $(LIB_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+$(LIB_STATIC): ht.o ht_iter.o
 	$(AR) rcs -o $@ $^
 
-$(SHARED_LIB): $(OBJECTS)
+$(LIB_SHARED): ht.o ht_iter.o
 	$(CC) -shared $^ -o $@
 
-$(BUILDDIR)/%.o: %.c | $(BUILDDIR)
-	$(CC) -c $(C_FLAGS) $(INCLUDES) $< -o $@
-
-$(BUILDDIR):
-	mkdir -p $@
-
-clean:
-	rm -rf $(BUILDDIR) $(DESTDIR)
-
-install: $(TARGETS)
+install: $(LIB_TARGETS)
 	install -d $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $^ $(DESTDIR)$(PREFIX)/lib/
 	install -d $(DESTDIR)$(PREFIX)/include/
-	install -m 644 $(INCLUDE_DIRS)/* $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(LIB_INCLUDEDIR)/* $(DESTDIR)$(PREFIX)/include/
 
--include $(DEPS)
+-include $(LIB_DEPS)
+
+TEST_SOURCEDIR += $(ROOTDIR)/tests/basic
+TEST_SOURCEDIR += $(ROOTDIR)/tests/uuid
+
+vpath %.c $(TEST_SOURCEDIR)
+
+TEST_SOURCE_C = basic.c uuid.c uuids.c
+TEST_OBJECTS = basic.o uuid.o uuids.o
+TEST_DEPS = basic.d uuid.d uuids.d
+TEST_GCOV = basic.gcda uuid.gcda uuids.gcda
+TEST_GCOV += basic.gcno uuid.gcno uuids.gcno
+TEST_CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -fPIC -MMD -MP \
+				-fprofile-arcs -ftest-coverage -fstack-protector-all
+TEST_LDFLAGS = -lcmocka -lgcov --coverage -L . -lht
+
+basic.o: basic.c
+	$(CC) -c $(TEST_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+uuid.o: uuid.c
+	$(CC) -c $(TEST_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+uuids.o: uuids.c
+	$(CC) -c $(TEST_CFLAGS) $(LIB_INCLUDES) $< -o $@
+
+basic.test: basic.o $(LIB_TARGETS)
+	$(CC) -o $@ $^ $(TEST_LDFLAGS)
+
+uuid.test: uuid.o uuids.o $(LIB_TARGETS)
+	$(CC) -o $@ $^ $(TEST_LDFLAGS) -luuid
+
+%.testlog: %.test
+	-@./$< > $@_cmocka.xml
+	-@valgrind --error-exitcode=1 --tool=memcheck --leak-check=full --xml=yes --xml-file=$@_valgrind.xml ./$< > /dev/null 2>&1
+
+%.check: %.testlog
+	@if [ "${shell xmllint --xpath 'string(//testsuites/testsuite/@failures)' $<_cmocka.xml}" != "0" ]; \
+		then cat $<_cmocka.xml && exit 1; \
+	fi
+	@if [ "${shell xmllint --xpath 'string(//valgrindoutput/error)' $<_valgrind.xml}" != "" ]; \
+		then cat $<_valgrind.xml && exit 1; \
+	fi
+
+clean:
+	rm -rf $(LIB_DEPS) $(LIB_OBJECTS) $(LIB_TARGETS) $(TEST_OBJECTS) $(TEST_DEPS) \
+			$(TEST_GCOV) *.test *.testlog *_cmocka.xml *_valgrind.xml
+
+-include $(TEST_DEPS)

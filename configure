@@ -29,10 +29,9 @@ usage() {
 CC=gcc
 AR=ar
 PREFIX=/usr/local
-DESTDIR=
-BUILDDIR=_build
 SHARED=1
 STATIC=1
+DEBUG=0
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -53,24 +52,6 @@ while [[ $# -gt 0 ]]; do
       PREFIX="$VALUE"
       shift
       ;;
-    --destdir)
-      shift
-      DESTDIR="$1"
-      shift
-      ;;
-    --destdir=*)
-      DESTDIR="$VALUE"
-      shift
-      ;;
-    --builddir)
-      shift
-      BUILDDIR="$1"
-      shift
-      ;;
-    --builddir=*)
-      BUILDDIR="$VALUE"
-      shift
-      ;;
     --no-shared)
       SHARED=0
       shift
@@ -78,23 +59,27 @@ while [[ $# -gt 0 ]]; do
     --no-static)
       STATIC=0
       shift
-      ;;            
+      ;;
+    --debug)
+      DEBUG=1
+      shift
+      ;;
     *)
       shift
       ;;
   esac
 done
 
-# Escape invalid characters in sed
+ROOTDIR=$(dirname "$0")
 
 # Replace the placemakers
-data=$(cat Makefile.in)
+data=$(cat $ROOTDIR/Makefile.in)
 data=`echo "$data" | sed "s|@cc@|$CC|g"`
 data=`echo "$data" | sed "s|@ar@|$AR|g"`
-data=`echo "$data" | sed "s|@destdir@|$DESTDIR|g"`
 data=`echo "$data" | sed "s|@prefix@|$PREFIX|g"`
-data=`echo "$data" | sed "s|@builddir@|$BUILDDIR|g"`
 data=`echo "$data" | sed "s|@shared@|$SHARED|g"`
 data=`echo "$data" | sed "s|@static@|$STATIC|g"`
+data=`echo "$data" | sed "s|@rootdir@|$ROOTDIR|g"`
+data=`echo "$data" | sed "s|@debug@|$DEBUG|g"`
 
 echo "$data" > Makefile

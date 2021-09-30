@@ -7,16 +7,16 @@ on:
     branches: [ master ]
 
 jobs:
-  hash_table:
+  libht:
     runs-on: ubuntu-latest
 
     env:
-        DOCKER_IMG: hash_table
+        DOCKER_IMG: libht
 
     strategy:
         fail-fast: false
         matrix:
-            test: [ tests/unittests, tests/code-style, tests/doxygen, tests/profile ]
+            test: [ code-style, doxygen ]
 
     steps:
 
@@ -35,4 +35,4 @@ jobs:
         # Set permissions for Docker mount
         sudo chown -R 1000:1000 .
         # Run test
-        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/hash_table $DOCKER_IMG bash --login -c "cd /workspaces/hash_table && make -C '${{ matrix.test }}' check -k"
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && make -C '${{ matrix.test }}' check -k"
