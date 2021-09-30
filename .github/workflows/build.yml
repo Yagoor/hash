@@ -14,11 +14,6 @@ jobs:
         DOCKER_IMG: libht
         COMMANDS: "cd /workspaces/libht && mkdir -p build && cd build && ./configure && make"
 
-    strategy:
-        fail-fast: false
-        matrix:
-            test: [ code-style, doxygen ]
-
     steps:
 
     - uses: actions/checkout@v2

@@ -13,6 +13,11 @@ jobs:
     env:
         DOCKER_IMG: libht
 
+    strategy:
+        fail-fast: false
+        matrix:
+            test: [ code-style, doxygen ]
+
     steps:
 
     - uses: actions/checkout@v2
@@ -31,4 +36,4 @@ jobs:
         # Set permissions for Docker mount
         sudo chown -R 1000:1000 .
         # Run test
-        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && make -C 'doxygen' check -k"
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && make -C '${{ matrix.test }}' check -k"
