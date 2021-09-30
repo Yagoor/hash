@@ -12,7 +12,11 @@ jobs:
 
     env:
         DOCKER_IMG: libht
-        COMMANDS: "cd /workspaces/libht && mkdir -p build && cd build && ../configure && make"
+
+    strategy:
+        fail-fast: false
+        matrix:
+            test: [ basic, uuid ]
 
     steps:
 
@@ -32,4 +36,11 @@ jobs:
         # Set permissions for Docker mount
         sudo chown -R 1000:1000 .
         # Run test
-        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "$COMMANDS"
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && mkdir -p build && cd build && ../configure && make"
+
+    - name: Execute tests
+      run: |
+        # Set permissions for Docker mount
+        sudo chown -R 1000:1000 .
+        # Run test
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && mkdir -p build && cd build && make '${{ matrix.test }}'.check -k"
