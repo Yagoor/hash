@@ -3,6 +3,8 @@ name: Doxygen
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   doxygen:
@@ -39,6 +41,11 @@ jobs:
       run: |
         # Run test
         docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && make -C 'doxygen' check -k"
+
+    - name: Ownership
+      run: |
+        # Set permissions for Docker mount
+        sudo chown -R 1000:1000 .
 
     - name: Commit docs
       run: |
