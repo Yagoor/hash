@@ -2,7 +2,7 @@ name: Publish
 
 on:
   create:
-    branches: [ master, feature/release ]
+    branches: [ master ]
 
 jobs:
   publish:
@@ -26,11 +26,6 @@ jobs:
       run: |
         echo Building from dockerfile
         docker build .devcontainer -t $DOCKER_IMG --no-cache --pull
-
-    - name: Ownership
-      run: |
-        # Set permissions for Docker mount
-        sudo chown -R 1000:1000 .
 
     - name: Build
       run: |

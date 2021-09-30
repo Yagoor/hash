@@ -31,11 +31,6 @@ jobs:
         echo Building from dockerfile
         docker build .devcontainer -t $DOCKER_IMG --no-cache --pull
 
-    - name: Ownership
-      run: |
-        # Set permissions for Docker mount
-        sudo chown -R 1000:1000 .
-
     - name: Build
       run: |
         docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces/libht $DOCKER_IMG bash --login -c "cd /workspaces/libht && mkdir -p build && cd build && ../configure --prefix=/usr && make"
