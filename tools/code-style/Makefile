@@ -35,7 +35,7 @@
 #########################################################################
 
 # Root directory
-BUILDROOT = ..
+BUILDROOT = ../..
 
 # Build directory
 BUILD_DIR = _build
@@ -45,8 +45,8 @@ MODULES =
 MODULES += .
 MODULES += src 
 MODULES += include
-MODULES += doxygen
-MODULES += code-style
+MODULES += tools
+MODULES += tools/*
 MODULES += tests
 MODULES += tests/*
 

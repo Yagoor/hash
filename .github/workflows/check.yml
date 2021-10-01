@@ -16,7 +16,7 @@ jobs:
     strategy:
         fail-fast: false
         matrix:
-            test: [ code-style, doxygen ]
+            test: [ tools/code-style, tools/doxygen ]
 
     steps:
 
