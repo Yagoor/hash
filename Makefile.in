@@ -41,7 +41,7 @@ LIB_CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -fPIC -MMD -MP
 
 # Remove optmization and add debug flag if in debug mode
 ifeq ($(DEBUG), 1)
-LIB_CFLAGS += -O0 -g 
+LIB_CFLAGS += -O0 -g -fprofile-arcs -ftest-coverage -fstack-protector-all
 else
 LIB_CFLAGS += -O3 -Werror
 endif
@@ -92,9 +92,14 @@ TEST_OBJECTS = basic.o uuid.o uuids.o
 TEST_DEPS = basic.d uuid.d uuids.d
 TEST_GCOV = basic.gcda uuid.gcda uuids.gcda
 TEST_GCOV += basic.gcno uuid.gcno uuids.gcno
-TEST_CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -fPIC -MMD -MP \
-				-fprofile-arcs -ftest-coverage -fstack-protector-all
+TEST_CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -fPIC -MMD -MP
 TEST_LDFLAGS = -lcmocka -lgcov --coverage -L . -lht
+
+ifeq ($(DEBUG), 1)
+TEST_CFLAGS += -O0 -g -fprofile-arcs -ftest-coverage -fstack-protector-all
+else
+TEST_CFLAGS += -O3 -Werror
+endif
 
 basic.o: basic.c
 	$(CC) -c $(TEST_CFLAGS) $(LIB_INCLUDES) $< -o $@

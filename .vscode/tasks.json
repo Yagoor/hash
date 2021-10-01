@@ -4,7 +4,7 @@
         {
             "label": "Build Current",
             "type": "shell",
-            "command": "make DEBUG=1 -C '${fileDirname}'",
+            "command": "make DEBUG=1 -C '${workspaceFolder}/build' ${fileBasenameNoExtension}.test",
             "group": {
                 "kind": "build",
                 "isDefault": true
