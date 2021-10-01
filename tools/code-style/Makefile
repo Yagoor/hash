@@ -35,7 +35,7 @@
 #########################################################################
 
 # Root directory
-BUILDROOT = ..
+BUILDROOT = ../..
 
 # Build directory
 BUILD_DIR = _build
