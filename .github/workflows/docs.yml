@@ -33,7 +33,7 @@ jobs:
     - name: Execute tests
       run: |
         # Run test
-        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && make -C 'doxygen' check -k"
+        docker run --privileged --sysctl net.ipv6.conf.all.disable_ipv6=0 -v `pwd`:/workspaces $DOCKER_IMG bash --login -c "cd /workspaces && make -C 'tools/doxygen' check -k"
 
     - name: Commit docs
       run: |
