@@ -2,7 +2,8 @@ name: Publish
 
 on:
   create:
-    branches: [ master ]
+    tags:
+      - v*
 
 jobs:
   publish:
