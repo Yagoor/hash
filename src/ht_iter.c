@@ -46,12 +46,9 @@ uint8_t ht_iter_get_next(ht_iter_t *ht_iterator, ht_t *hash_table, uint8_t *key,
     uint8_t *data)
 {
   uint32_t position;
-  uint8_t *entries;
   ht_entry_t *hash_entry;
   uint8_t *hash_entry_key;
   uint8_t *hash_entry_data;
-
-  entries = (uint8_t *)hash_table + sizeof(ht_t);
 
   /* Iterate over the entries */
   for ( ; ht_iterator->current < hash_table->size;
@@ -60,7 +57,7 @@ uint8_t ht_iter_get_next(ht_iter_t *ht_iterator, ht_t *hash_table, uint8_t *key,
     position = ht_iterator->current *
         (sizeof(ht_entry_t) + hash_table->key_size +
         hash_table->data_size);
-    hash_entry = (ht_entry_t *)(entries + position);
+    hash_entry = (ht_entry_t *)(hash_table->data + position);
 
     if (hash_entry->used) {
       hash_entry_key = (uint8_t *)(hash_entry + sizeof(ht_entry_t));

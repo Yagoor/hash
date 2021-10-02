@@ -58,6 +58,18 @@ typedef uint64_t (*hash_function_t) (const uint8_t *key, const uint32_t size);
  */
 typedef struct {
   /**
+   * @brief Hash function callback
+   *
+   */
+  hash_function_t       hash_function;
+
+  /**
+   * @brief Hash table data
+   *
+   */
+  uint8_t *             data;
+
+  /**
    * @brief Hash size
    *
    */
@@ -80,12 +92,6 @@ typedef struct {
    *
    */
   uint32_t              key_size;
-
-  /**
-   * @brief Hash function callback
-   *
-   */
-  hash_function_t       hash_function;
 } ht_t;
 
 /**
@@ -96,10 +102,11 @@ typedef struct {
  * @param[in] size Hash size
  * @param[in] data_size Hash data size
  * @param[in] key_size Hash key size
+ * @param[in] data Hash table data buffer
  * @return uint8_t 1 if the hash_table was initialized else 0
  */
 uint8_t ht_init(ht_t *hash_table, hash_function_t hash_function,
-    uint32_t size, uint32_t data_size, uint32_t key_size);
+    uint32_t size, uint32_t data_size, uint32_t key_size, uint8_t *data);
 
 /**
  * @brief Function to insert an item in the hash_table
