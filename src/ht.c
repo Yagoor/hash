@@ -52,9 +52,8 @@ static ht_entry_t *hash_find(ht_t *hash_table, uint8_t *key)
 
   entries = (uint8_t *)hash_table + sizeof(ht_t);
   /* Convert hash_table key to index */
-  index = hash_table->hash_function(key, hash_table->key_size);
-  printf("Index: %lu\n", index);
-  index %= hash_table->size;
+  index =
+      hash_table->hash_function(key, hash_table->key_size) % hash_table->size;
   /* Iterate over the entries looking for an empty one starting from the index */
   for (i = 0; i < hash_table->size; i++)
   {
