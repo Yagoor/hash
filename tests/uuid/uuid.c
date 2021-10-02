@@ -47,11 +47,9 @@ typedef struct {
 
 #define UUID_HASH_ENTRIES_SIZE    5000
 
-typedef struct {
-  ht_t          hash_table;
-  uint8_t       data[(sizeof(ht_entry_t) + sizeof(uuid_key_t) +
-      sizeof(uuid_data_t)) * UUID_HASH_ENTRIES_SIZE];
-} uuid_ht_t;
+static ht_t hash_table;
+static uint8_t hash_table_data[(sizeof(ht_entry_t) + sizeof(uuid_key_t) +
+    sizeof(uuid_data_t)) * UUID_HASH_ENTRIES_SIZE];
 
 static uint32_t uuid_hash_function(uint8_t *key)
 {
@@ -75,19 +73,18 @@ static uint32_t uuid_hash_function(uint8_t *key)
 }
 
 
-void test_uuid_hash(void **state)
+void test_hash(void **state)
 {
+  (void)state;
+
   uuid_key_t uuid_key;
   uuid_data_t uuid_data;
-  uuid_ht_t uuid_hash;
-
-  uuid_hash = (*(uuid_ht_t *)(*state));
 
   /* Remove one item */
   uuid_parse(uuids[5], uuid_key.uuid);
   uuid_data.x = 5000;
 
-  assert_true(ht_remove((ht_t *)&uuid_hash,
+  assert_true(ht_remove(&hash_table, 
       (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 5);
@@ -95,7 +92,7 @@ void test_uuid_hash(void **state)
   /* Try to remove it again */
   uuid_parse(uuids[5], uuid_key.uuid);
   uuid_data.x = 5000;
-  assert_false(ht_remove((ht_t *)&uuid_hash,
+  assert_false(ht_remove(&hash_table,
       (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 5000);
@@ -103,47 +100,46 @@ void test_uuid_hash(void **state)
   /* Try to remove item that was not added */
   uuid_parse("0e5e756a-0d72-11ec-82a8-0242ac130003", uuid_key.uuid);
   uuid_data.x = 4999;
-  assert_false(ht_remove((ht_t *)&uuid_hash,
+  assert_false(ht_remove(&hash_table,
       (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 4999);
 
   /* Get item from hash_table and check content */
   uuid_parse(uuids[10], uuid_key.uuid);
-  assert_true(ht_get((ht_t *)&uuid_hash, (uint8_t *)&uuid_key,
+  assert_true(ht_get(&hash_table, (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 10);
 
   /* Remove same item from hash_table */
   uuid_parse(uuids[10], uuid_key.uuid);
-  assert_true(ht_remove((ht_t *)&uuid_hash,
+  assert_true(ht_remove(&hash_table,
       (uint8_t *)&uuid_key,
       NULL));
 
   /* Try to get it again */
   uuid_parse(uuids[10], uuid_key.uuid);
-  assert_false(ht_get((ht_t *)&uuid_hash, (uint8_t *)&uuid_key,
+  assert_false(ht_get(&hash_table, (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
 }
 
 
-void test_uuid_hash_iterator(void **state)
+void test_hash_iterator(void **state)
 {
+  (void)state;
+
   uint32_t i;
   uuid_t uuid;
-  uuid_ht_t uuid_hash;
   ht_iter_t ht_iterator;
   uuid_key_t uuid_key;
   uuid_data_t uuid_data;
   uint8_t data_checker[1000];
 
-  uuid_hash = (*(uuid_ht_t *)(*state));
-
   memset(data_checker, 0, sizeof(data_checker));
-  ht_iter_init(&ht_iterator, (ht_t *)&uuid_hash);
+  ht_iter_init(&ht_iterator, &hash_table);
 
   while (ht_iter_get_next(&ht_iterator,
-      (ht_t *)&uuid_hash, (uint8_t *)&uuid_key,
+      &hash_table, (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data))
   {
     /* Use lookup table to ensure data is unique based on setup */
@@ -164,20 +160,18 @@ void test_uuid_hash_iterator(void **state)
 
 int setup(void **state)
 {
+  (void)state;
+
   uint32_t i;
   uuid_key_t uuid_key;
   uuid_data_t uuid_data;
-  uuid_ht_t *uuid_hash;
 
-  uuid_hash = malloc(sizeof(uuid_ht_t));
-
-  if (uuid_hash == NULL) {
-    return (-1);
-  }
+  memset(&hash_table, 0, sizeof(hash_table));
+  memset(hash_table_data, 0, sizeof(hash_table_data));
 
   /* Initialize hash_table */
-  assert_true(ht_init((ht_t *)uuid_hash, uuid_hash_function,
-      UUID_HASH_ENTRIES_SIZE, sizeof(uuid_data_t), sizeof(uuid_key_t)));
+  assert_true(ht_init(&hash_table, uuid_hash_function, UUID_HASH_ENTRIES_SIZE,
+      sizeof(uuid_data_t), sizeof(uuid_key_t), hash_table_data));
 
   /* Populate hash_table ensuring that repeated keys is not allowed */
   for (i = 1; i <= sizeof(uuids) / sizeof(char[37]); i++)
@@ -185,22 +179,20 @@ int setup(void **state)
     uuid_parse(uuids[i - 1], uuid_key.uuid);
     uuid_data.x = i - 1;
 
-    assert_true(ht_insert((ht_t *)uuid_hash,
+    assert_true(ht_insert(&hash_table,
         (uint8_t *)&uuid_key,
         (uint8_t *)&uuid_data));
 
     /* Check hash_table count */
-    assert_true(ht_count((ht_t *)uuid_hash) == i);
+    assert_true(ht_count(&hash_table) == i);
 
-    assert_false(ht_insert((ht_t *)uuid_hash,
+    assert_false(ht_insert(&hash_table,
         (uint8_t *)&uuid_key,
         (uint8_t *)&uuid_data));
 
     /* Check hash_table count */
-    assert_true(ht_count((ht_t *)uuid_hash) == i);
+    assert_true(ht_count(&hash_table) == i);
   }
-
-  *state = uuid_hash;
 
   return (0);
 }
@@ -208,11 +200,23 @@ int setup(void **state)
 
 int teardown(void **state)
 {
-  uuid_ht_t *uuid_hash;
+  (void)state;
 
-  uuid_hash = *state;
+  return (0);
+}
 
-  free(uuid_hash);
+
+int group_setup(void **state)
+{
+  (void)state;
+
+  return (0);
+}
+
+
+int group_teardown(void **state)
+{
+  (void)state;
 
   return (0);
 }
@@ -222,13 +226,16 @@ int main(void)
 {
   const struct CMUnitTest tests[] =
   {
-    cmocka_unit_test(test_uuid_hash),
-    cmocka_unit_test(test_uuid_hash_iterator),
+    cmocka_unit_test_setup_teardown(test_hash,          setup,
+        teardown),
+    cmocka_unit_test_setup_teardown(test_hash_iterator, setup,
+        teardown),
   };
 
   cmocka_set_message_output(CM_OUTPUT_XML);
 
-  int count_fail_tests = cmocka_run_group_tests(tests, setup, teardown);
+  int count_fail_tests = cmocka_run_group_tests(tests, group_setup,
+          group_teardown);
 
   return (count_fail_tests);
 }

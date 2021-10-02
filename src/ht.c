@@ -46,11 +46,9 @@ static ht_entry_t *hash_find(ht_t *hash_table, uint8_t *key)
   uint32_t i;
   uint32_t index;
   uint32_t position;
-  uint8_t *entries;
   uint8_t *hash_entry_key;
   ht_entry_t *hash_entry;
 
-  entries = (uint8_t *)hash_table + sizeof(ht_t);
   /* Convert hash_table key to index */
   index = hash_table->hash_function(key) % hash_table->size;
 
@@ -60,7 +58,7 @@ static ht_entry_t *hash_find(ht_t *hash_table, uint8_t *key)
     position = index *
         (sizeof(ht_entry_t) + hash_table->key_size +
         hash_table->data_size);
-    hash_entry = (ht_entry_t *)(entries + position);
+    hash_entry = (ht_entry_t *)(hash_table->data + position);
 
     if (!hash_entry->used) {
       return (hash_entry);
@@ -82,19 +80,14 @@ static ht_entry_t *hash_find(ht_t *hash_table, uint8_t *key)
 
 
 uint8_t ht_init(ht_t *hash_table, hash_function_t hash_function,
-    uint32_t size, uint32_t data_size, uint32_t key_size)
+    uint32_t size, uint32_t data_size, uint32_t key_size, uint8_t *data)
 {
-  uint8_t *entries;
-
-  entries = (uint8_t *)hash_table + sizeof(ht_t);
-
+  hash_table->hash_function = hash_function;
+  hash_table->data = data;
   hash_table->size = size;
   hash_table->count = 0;
   hash_table->data_size = data_size;
   hash_table->key_size = key_size;
-  hash_table->hash_function = hash_function;
-  memset(entries, 0,
-      (sizeof(ht_entry_t) + key_size + data_size) * size);
 
   return (1);
 }
