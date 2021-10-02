@@ -33,6 +33,7 @@
 
 #include "ht.h"
 #include "ht_iter.h"
+#include "ht_fn_djb.h"
 
 /* Kept on uuids.c to make this file cleaner */
 extern char uuids[1000][37];
@@ -50,28 +51,6 @@ typedef struct {
 static ht_t hash_table;
 static uint8_t hash_table_data[(sizeof(ht_entry_t) + sizeof(uuid_key_t) +
     sizeof(uuid_data_t)) * UUID_HASH_ENTRIES_SIZE];
-
-static uint32_t uuid_hash_function(uint8_t *key)
-{
-  /* Hash djb2 */
-  uint32_t hash = 5381;
-  uuid_key_t *uuid_key;
-  char uuid_str[37];
-  char *str;
-  char c;
-
-  uuid_key = (uuid_key_t *)key;
-  str = uuid_str;
-  uuid_unparse_lower(uuid_key->uuid, uuid_str);
-
-  while ((c = *str++))
-  {
-    hash = ((hash << 5) + hash) + c;
-  }
-
-  return (hash);
-}
-
 
 void test_hash(void **state)
 {
@@ -170,7 +149,7 @@ int setup(void **state)
   memset(hash_table_data, 0, sizeof(hash_table_data));
 
   /* Initialize hash_table */
-  assert_true(ht_init(&hash_table, uuid_hash_function, UUID_HASH_ENTRIES_SIZE,
+  assert_true(ht_init(&hash_table, ht_fn_djb, UUID_HASH_ENTRIES_SIZE,
       sizeof(uuid_data_t), sizeof(uuid_key_t), hash_table_data));
 
   /* Populate hash_table ensuring that repeated keys is not allowed */
