@@ -84,7 +84,7 @@ void test_hash(void **state)
   uuid_parse(uuids[5], uuid_key.uuid);
   uuid_data.x = 5000;
 
-  assert_true(ht_remove(&hash_table, 
+  assert_true(ht_remove(&hash_table,
       (uint8_t *)&uuid_key,
       (uint8_t *)&uuid_data));
   assert_true(uuid_data.x == 5);
