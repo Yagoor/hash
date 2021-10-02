@@ -50,7 +50,8 @@ typedef struct {
  * @brief Function callback
  *
  */
-typedef uint32_t (*hash_function_t) (uint8_t *key);
+typedef uint64_t (*hash_function_t) (const unsigned char *key,
+    const uint32_t size);
 
 /**
  * @brief Hash struct

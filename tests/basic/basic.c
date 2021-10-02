@@ -50,13 +50,17 @@ typedef struct {
       sizeof(basic_data_t)) * BASIC_HASH_ENTRIES_SIZE];
 } basic_ht_t;
 
-static uint32_t basic_hash_function(uint8_t *key)
+static uint64_t basic_hash_function(const uint8_t *key, const uint32_t size)
 {
-  basic_key_t *basic_key;
+  uint64_t hash = 0;
+  uint32_t i;
 
-  basic_key = (basic_key_t *)key;
+  for (i = 0; i < size; i++)
+  {
+    hash = hash + (key[i] * 32);
+  }
 
-  return ((basic_key->key * 32) >> 8);
+  return (hash);
 }
 
 

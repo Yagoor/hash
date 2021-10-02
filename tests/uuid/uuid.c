@@ -33,6 +33,7 @@
 
 #include "ht.h"
 #include "ht_iter.h"
+#include "ht_fn_djb.h"
 
 /* Kept on uuids.c to make this file cleaner */
 extern char uuids[1000][37];
@@ -52,28 +53,6 @@ typedef struct {
   uint8_t       data[(sizeof(ht_entry_t) + sizeof(uuid_key_t) +
       sizeof(uuid_data_t)) * UUID_HASH_ENTRIES_SIZE];
 } uuid_ht_t;
-
-static uint32_t uuid_hash_function(uint8_t *key)
-{
-  /* Hash djb2 */
-  uint32_t hash = 5381;
-  uuid_key_t *uuid_key;
-  char uuid_str[37];
-  char *str;
-  char c;
-
-  uuid_key = (uuid_key_t *)key;
-  str = uuid_str;
-  uuid_unparse_lower(uuid_key->uuid, uuid_str);
-
-  while ((c = *str++))
-  {
-    hash = ((hash << 5) + hash) + c;
-  }
-
-  return (hash);
-}
-
 
 void test_uuid_hash(void **state)
 {
@@ -176,8 +155,8 @@ int setup(void **state)
   }
 
   /* Initialize hash_table */
-  assert_true(ht_init((ht_t *)uuid_hash, uuid_hash_function,
-      UUID_HASH_ENTRIES_SIZE, sizeof(uuid_data_t), sizeof(uuid_key_t)));
+  assert_true(ht_init((ht_t *)uuid_hash, ht_fn_djb, UUID_HASH_ENTRIES_SIZE,
+      sizeof(uuid_data_t), sizeof(uuid_key_t)));
 
   /* Populate hash_table ensuring that repeated keys is not allowed */
   for (i = 1; i <= sizeof(uuids) / sizeof(char[37]); i++)
